@@ -19,7 +19,7 @@ forge test -vvv
 ```
 
 # Note:
-If your `forge build` command fails with an error related to `build` not being a valid subcommand, this may be due to you already having `@arcblocks/forge-cli` from the Solana development environment here.
+If your `forge build` command fails with an error related to `build` not being a valid subcommand, this may be due to you already having `@arcblock/forge-cli` from the Solana development environment here.
 
 To fix this:
 ```
