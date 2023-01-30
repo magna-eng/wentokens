@@ -6,7 +6,7 @@ import "../src/Airdrop.sol";
 import "../src/Token.sol";
 
 contract AirdropTest is Test {
-    uint256 constant AIRDROP_SIZE = 2;
+    uint256 constant AIRDROP_SIZE = 3000;
     Airdrop airdrop;
     Token token;
     address admin;
