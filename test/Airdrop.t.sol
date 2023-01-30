@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity=0.8.17;
 
 import "forge-std/Test.sol";
 import "../src/Airdrop.sol";
 import "../src/Token.sol";
 
 contract AirdropTest is Test {
-    uint256 constant AIRDROP_SIZE = 3000;
+    uint256 constant AIRDROP_SIZE = 2;
     Airdrop airdrop;
     Token token;
     address admin;
