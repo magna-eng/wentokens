@@ -7,12 +7,13 @@ import "../src/Deployer.sol";
 
 contract DeployTest is Test {
     Deployer deployer;
-    Airdrop airdrop;
 
+    // deploy a new Deployer contract
     constructor() {
         deployer = new Deployer();
     }
 
+    // util function to get the pre-computed address of the contract
     function _preComputeAddress() external view returns (address) {
         bytes memory airdropCode = abi.encodePacked(type(Airdrop).creationCode);
         bytes32 airdropSalt = keccak256(abi.encodePacked("airdrop"));
@@ -23,12 +24,14 @@ contract DeployTest is Test {
         return airdropAddress;
     }
 
+    // test the deploy function
     function testDeploy_deployContract() external {
         bytes memory airdropCode = abi.encodePacked(type(Airdrop).creationCode);
         bytes32 airdropSalt = keccak256(abi.encodePacked("airdrop"));
         deployer.deploy(airdropCode, airdropSalt);
     }
 
+    // more thorough test to ensure that the pre-computed address is the same as the deployed address
     function testDeploy_deployAndValidateAddress() external {
         bytes memory airdropCode = abi.encodePacked(type(Airdrop).creationCode);
         bytes32 airdropSalt = keccak256(abi.encodePacked("airdrop"));
