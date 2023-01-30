@@ -24,15 +24,17 @@ contract DeployTest is Test {
         return airdropAddress;
     }
 
-    // test the deploy function
     function testDeploy_deployContract() external {
+        console.log("[TEST]: Contract deploys successfully");
         bytes memory airdropCode = abi.encodePacked(type(Airdrop).creationCode);
         bytes32 airdropSalt = keccak256(abi.encodePacked("airdrop"));
         deployer.deploy(airdropCode, airdropSalt);
     }
 
-    // more thorough test to ensure that the pre-computed address is the same as the deployed address
     function testDeploy_deployAndValidateAddress() external {
+        console.log(
+            "[TEST]: Pre-compute contract address and validate deployed address"
+        );
         bytes memory airdropCode = abi.encodePacked(type(Airdrop).creationCode);
         bytes32 airdropSalt = keccak256(abi.encodePacked("airdrop"));
         address airdropAddress = deployer.preComputeAddress(
