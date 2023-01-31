@@ -1180,7 +1180,7 @@
   resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-0.2.4.tgz#7f90e64f42e614d9d324b5be2a6a49dfb0d39264"
   integrity sha512-c2mJED5H9zHzpam2JSD76ln1UmrQShas5BAHA98FjSAHlqU41zWvUhOfm9mHMh8j2NCFJ+pGdQIlXFGs8Qe8cg==
 
-"@wagmi/cli@~0.1.2":
+"@wagmi/cli@~0.1.3":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@wagmi/cli/-/cli-0.1.3.tgz#36b6ff697212ec9a12a9ea449a1ceb6cf4f3452e"
   integrity sha512-XXkT7272hV6mgM3yMPYCfzTRcfXZ+Hnkza/x5YobeYTnjm4N5OV52CDyBu+c+kZwFpx4VvbJ0q/RK7L+a+qREw==
@@ -4816,7 +4816,7 @@ vite@^3.1.8:
   optionalDependencies:
     fsevents "~2.3.2"
 
-wagmi@~0.11.0:
+wagmi@~0.11.1:
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.11.2.tgz#fee24b0861bd06fd62cf1c43414d149e4f1cfa97"
   integrity sha512-Chjhk3Q38ex01Caz91rI43gG4sMKs6G6kN5uEyxkupwXw9pzKxCoDAm53ZDtuo1CxqiD4Df39Gv8Qx+APvKNDg==
