@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
-/**
- * @title Magna Airdrop | wentokens.xyz
- * @author @PopPunkOnChain | Harrison Leggio
- * @notice Gas efficient airdrop contract for ERC20 and ETH
- */
 pragma solidity =0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+/**
+ * @title Magna Airdrop | wentokens.xyz
+ * @notice Hyper efficient Airdrop contract for ERC20 and ETH
+ * @author Harrison (@PopPunkOnChain)
+ * @author Magna (@MagnaTokens)
+ */
 contract Airdrop {
     /**
      *
