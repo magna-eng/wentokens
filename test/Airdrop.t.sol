@@ -1,23 +1,21 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity=0.8.17;
+pragma solidity =0.8.17;
 
 import "forge-std/Test.sol";
 import "../src/Airdrop.sol";
 import "../src/Token.sol";
 
 contract AirdropTest is Test {
-    uint256 constant AIRDROP_SIZE = 3000;
+    uint256 constant AIRDROP_SIZE = 7000;
     Airdrop airdrop;
     Token token;
     address admin;
     address[] recipients;
     uint256[] amounts;
-    uint256 airdropAmount;
 
-    uint256 constant _initial_supply = (10**15) * (10**18);
+    uint256 constant _initial_supply = (10 ** 15) * (10 ** 18);
 
     constructor() {
-        console.log("Sending airdrop to %s recipients", AIRDROP_SIZE);
         airdrop = new Airdrop();
         token = new Token();
         admin = _randomAddress();
@@ -28,9 +26,8 @@ contract AirdropTest is Test {
 
         for (uint256 i = 0; i < AIRDROP_SIZE; i++) {
             recipients[i] = _randomAddress();
-            amounts[i] = 500;
+            amounts[i] = 1;
         }
-        airdropAmount = AIRDROP_SIZE * 500;
     }
 
     function _randomAddress() private view returns (address payable) {
@@ -38,19 +35,43 @@ contract AirdropTest is Test {
     }
 
     function _randomUint256() private view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, block.number)));
-    }   
+        return
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        block.timestamp,
+                        block.difficulty,
+                        block.number
+                    )
+                )
+            );
+    }
 
-    function testAirdrop_secretAirdrop() external {
+    function testAirdrop_airdropERC20() external {
+        console.log(
+            "[TEST]: Airdrops ERC20 tokens to recipients using assembly function"
+        );
         vm.prank(admin);
-        token.approve(address(airdrop), airdropAmount);
+        token.approve(address(airdrop), AIRDROP_SIZE);
         vm.prank(admin);
-        airdrop.airdropERC20(token, recipients, amounts, airdropAmount);
+        airdrop.airdropERC20(token, recipients, amounts, AIRDROP_SIZE);
+    }
+
+    function testAirdrop_airdropETH() external {
+        console.log(
+            "[TEST]: Airdrops ETH to recipients using assembly function"
+        );
+        payable(admin).transfer(AIRDROP_SIZE);
+        vm.prank(admin);
+        airdrop.airdropETH{value: AIRDROP_SIZE}(recipients, amounts);
     }
 
     function testAirdrop_disperseApp() external {
+        console.log(
+            "[TEST]: Airdrops ERC20 tokens to recipients using disperseApp function for benchmark"
+        );
         vm.prank(admin);
-        token.approve(address(airdrop), airdropAmount);
+        token.approve(address(airdrop), AIRDROP_SIZE);
         vm.prank(admin);
         airdrop.disperseToken(token, recipients, amounts);
     }
