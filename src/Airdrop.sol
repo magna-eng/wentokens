@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 contract Airdrop {
     /**
-     * 
+     *
      * @param _recipients list of recipients
      * @param _amounts  list of amounts to send each recipient
      */
@@ -18,22 +18,25 @@ contract Airdrop {
         address[] memory _recipients,
         uint256[] memory _amounts
     ) external payable {
-
+        // looop through _recipients
         assembly {
             for {
                 let i := 0
             } lt(i, mload(_recipients)) {
+                // increment i
                 i := add(i, 1)
             } {
+                // send _amounts[i] to _recipients[i]
                 let success := call(
                     gas(),
-                    mload(add(add(_recipients, 0x20), mul(i, 0x20))),
-                    mload(add(add(_amounts, 0x20), mul(i, 0x20))),
+                    mload(add(add(_recipients, 0x20), mul(i, 0x20))), // load address
+                    mload(add(add(_amounts, 0x20), mul(i, 0x20))), // load amount
                     0,
                     0,
                     0,
                     0
                 )
+                // revert if call fails
                 if iszero(success) {
                     revert(0, 0)
                 }
@@ -42,7 +45,7 @@ contract Airdrop {
     }
 
     /**
-     * 
+     *
      * @param _token ERC20 token to airdrop
      * @param _recipients list of recipients
      * @param _amounts list of amounts to send each recipient
@@ -54,17 +57,22 @@ contract Airdrop {
         uint256[] memory _amounts,
         uint256 _total
     ) external {
-        bytes4 transferFrom = bytes4(
-            keccak256("transferFrom(address,address,uint256)")
-        );
-        bytes4 transfer = bytes4(keccak256("transfer(address,uint256)"));
+        // bytes selector for transferFrom(address,address,uint256)
+        bytes4 transferFrom = 0x23b872dd;
+        // bytes selector for transfer(address,uint256)
+        bytes4 transfer = 0xa9059cbb;
 
         assembly {
+            // store transferFrom selector
             let transferFromData := add(0x20, mload(0x40))
             mstore(transferFromData, transferFrom)
+            // store caller address
             mstore(add(transferFromData, 0x04), caller())
+            // store address
             mstore(add(transferFromData, 0x24), address())
+            // store _total
             mstore(add(transferFromData, 0x44), _total)
+            // call transferFrom for _total
             let successTransferFrom := call(
                 gas(),
                 _token,
@@ -74,25 +82,30 @@ contract Airdrop {
                 0,
                 0
             )
+            // revert if call fails
             if iszero(successTransferFrom) {
                 revert(0, 0)
             }
-
+            // loop through _recipients
             for {
                 let i := 0
             } lt(i, mload(_recipients)) {
                 i := add(i, 1)
             } {
+                // store transfer selector
                 let transferData := add(0x20, mload(0x40))
                 mstore(transferData, transfer)
+                // store _recipients[i]
                 mstore(
                     add(transferData, 0x04),
                     mload(add(add(_recipients, 0x20), mul(i, 0x20)))
                 )
+                // store _amounts[i]
                 mstore(
                     add(transferData, 0x24),
                     mload(add(add(_amounts, 0x20), mul(i, 0x20)))
                 )
+                // call transfer for _amounts[i] to _recipients[i]
                 let successTransfer := call(
                     gas(),
                     _token,
@@ -102,6 +115,7 @@ contract Airdrop {
                     0,
                     0
                 )
+                // revert if call fails
                 if iszero(successTransfer) {
                     revert(0, 0)
                 }
@@ -110,11 +124,11 @@ contract Airdrop {
     }
 
     /**
-     * 
+     *
      * @param token ERC20 token to airdrop
      * @param recipients list of recipients
      * @param values values to send each recipient
-     * 
+     *
      * @dev This function is used to benchmark against airdropERC20
      * source: https://etherscan.io/address/0xD152f549545093347A162Dce210e7293f1452150#code
      */

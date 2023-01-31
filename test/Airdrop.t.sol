@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity=0.8.17;
+pragma solidity =0.8.17;
 
 import "forge-std/Test.sol";
 import "../src/Airdrop.sol";
@@ -13,7 +13,7 @@ contract AirdropTest is Test {
     address[] recipients;
     uint256[] amounts;
 
-    uint256 constant _initial_supply = (10**15) * (10**18);
+    uint256 constant _initial_supply = (10 ** 15) * (10 ** 18);
 
     constructor() {
         airdrop = new Airdrop();
@@ -35,10 +35,22 @@ contract AirdropTest is Test {
     }
 
     function _randomUint256() private view returns (uint256) {
-        return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, block.number)));
-    }   
+        return
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        block.timestamp,
+                        block.difficulty,
+                        block.number
+                    )
+                )
+            );
+    }
 
     function testAirdrop_airdropERC20() external {
+        console.log(
+            "[TEST]: Airdrops ERC20 tokens to recipients using assembly function"
+        );
         vm.prank(admin);
         token.approve(address(airdrop), AIRDROP_SIZE);
         vm.prank(admin);
@@ -46,12 +58,18 @@ contract AirdropTest is Test {
     }
 
     function testAirdrop_airdropETH() external {
+        console.log(
+            "[TEST]: Airdrops ETH to recipients using assembly function"
+        );
         payable(admin).transfer(AIRDROP_SIZE);
         vm.prank(admin);
         airdrop.airdropETH{value: AIRDROP_SIZE}(recipients, amounts);
     }
 
     function testAirdrop_disperseApp() external {
+        console.log(
+            "[TEST]: Airdrops ERC20 tokens to recipients using disperseApp function for benchmark"
+        );
         vm.prank(admin);
         token.approve(address(airdrop), AIRDROP_SIZE);
         vm.prank(admin);
