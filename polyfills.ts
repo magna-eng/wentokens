@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Buffer } from 'buffer'
 import process from 'process'
 
