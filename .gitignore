@@ -43,6 +43,7 @@ yarn-error.log*
 # typescript
 
 \*.tsbuildinfo
+src/generated.ts
 
 # Compiler files
 cache/
