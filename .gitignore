@@ -45,8 +45,8 @@ yarn-error.log*
 \*.tsbuildinfo
 
 # Compiler files
-cache/
-out/
+contracts/cache/
+contracts/out/
 
 # Ignores development broadcast logs
 !/broadcast
