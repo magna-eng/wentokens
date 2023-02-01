@@ -12,5 +12,5 @@ export default defineConfig({
       util: 'util',
     },
   },
-  plugins: [react()],
+  plugins: [react({ babel: { plugins: ['typewind/babel'] }})],
 })
