@@ -48,6 +48,7 @@ src/generated.ts
 # Compiler files
 cache/
 contracts/out/
+out/
 
 # Ignores development broadcast logs
 !/broadcast
