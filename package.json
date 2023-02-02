@@ -5,6 +5,7 @@
   "scripts": {
     "postinstall": "typewind generate",
     "anvil": "source .env && anvil --fork-url $ANVIL_FORK_URL --chain-id $ANVIL_CHAIN_ID",
+    "clean": "eslint --fix --ext .js,.jsx,.ts,.tsx . && prettier . --write",
     "deploy": "source .env && forge create contracts/src/Airdrop.sol:Airdrop --rpc-url $FORGE_RPC_URL --private-key $FORGE_PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY --verify",
     "deploy:anvil": "source .env && forge create contracts/src/Airdrop.sol:Airdrop --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
     "dev": "yarn wagmi && vite",
@@ -26,14 +27,22 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.26",
-    "@types/react-dom": "^18.0.9",
+    "@types/react-dom": "^18.0.10",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
     "@vitejs/plugin-react": "^3.0.1",
     "autoprefixer": "^10.4.13",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-plugin-import": "^2.27.5",
     "postcss": "^8.4.21",
+    "prettier": "^2.8.3",
     "sass": "^1.57.1",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.9.4",
     "typewind": "*",
-    "vite": "^4.0.4"
+    "vite": "^4.0.4",
+    "vite-plugin-eslint": "^1.8.1"
   }
 }

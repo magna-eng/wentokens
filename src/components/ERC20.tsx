@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { ethers } from 'ethers';
 import {
   erc20ABI,
   useAccount,
@@ -6,7 +6,7 @@ import {
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
-} from "wagmi";
+} from 'wagmi';
 
 export function ERC20() {
   return (
@@ -19,14 +19,14 @@ export function ERC20() {
 
 function Approve() {
   const { address } = useAccount();
-  const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
-  const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
+  const airdropAddress = '0x93c1313F006669130e37626BB85558a378703181';
+  const tokenAddress = '0x6292F13202e6d418136aa7d40e1BF85F3e394682';
 
   const { config } = usePrepareContractWrite({
     address: tokenAddress,
     abi: erc20ABI,
-    functionName: "approve",
-    args: [airdropAddress, ethers.utils.parseUnits("1000", "ether")],
+    functionName: 'approve',
+    args: [airdropAddress, ethers.utils.parseUnits('1000', 'ether')],
   });
 
   const { data, write } = useContractWrite(config);
@@ -34,7 +34,7 @@ function Approve() {
   const { refetch } = useContractRead({
     address: tokenAddress,
     abi: erc20ABI,
-    functionName: "allowance",
+    functionName: 'allowance',
     args: [address!, airdropAddress],
   });
   const { isLoading } = useWaitForTransaction({
@@ -44,12 +44,9 @@ function Approve() {
 
   return (
     <div>
-      <button
-        disabled={!write || isLoading }
-        onClick={() => write?.()}
-      >
-        {" "}
-        Approve{" "}
+      <button disabled={!write || isLoading} onClick={() => write?.()}>
+        {' '}
+        Approve{' '}
       </button>
     </div>
   );
@@ -57,13 +54,13 @@ function Approve() {
 
 function GetAllowance() {
   const { address } = useAccount();
-  const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
-  const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
+  const airdropAddress = '0x93c1313F006669130e37626BB85558a378703181';
+  const tokenAddress = '0x6292F13202e6d418136aa7d40e1BF85F3e394682';
 
   const { data: allowance } = useContractRead({
     address: tokenAddress,
     abi: erc20ABI,
-    functionName: "allowance",
+    functionName: 'allowance',
     args: [address!, airdropAddress],
   });
 

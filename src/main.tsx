@@ -1,10 +1,9 @@
-import * as React from 'react'
-import * as ReactDOM from 'react-dom/client'
-import { WagmiConfig } from 'wagmi'
-
-import { App } from './App'
-import { client } from './wagmi'
-import './index.scss'
+import * as React from 'react';
+import * as ReactDOM from 'react-dom/client';
+import { WagmiConfig } from 'wagmi';
+import { App } from './App';
+import { client } from './wagmi';
+import './index.scss';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -12,4 +11,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <App />
     </WagmiConfig>
   </React.StrictMode>,
-)
+);
