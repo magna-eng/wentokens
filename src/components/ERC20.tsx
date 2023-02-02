@@ -18,7 +18,7 @@ export function ERC20() {
 }
 
 function Approve() {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
   const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
 
