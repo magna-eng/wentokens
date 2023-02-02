@@ -1,12 +1,12 @@
 import { ethers } from "ethers";
 import {
   erc20ABI,
+  useAccount,
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
-
 
 export function ERC20() {
   return (
@@ -18,6 +18,7 @@ export function ERC20() {
 }
 
 function Approve() {
+  const { address, isConnected } = useAccount();
   const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
   const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
 
@@ -34,7 +35,7 @@ function Approve() {
     address: tokenAddress,
     abi: erc20ABI,
     functionName: "allowance",
-    args: ["0x76BCF35A7D0F9Ab3B33952920AEC7f229E839a0F", airdropAddress],
+    args: [address!, airdropAddress],
   });
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
@@ -43,7 +44,10 @@ function Approve() {
 
   return (
     <div>
-      <button disabled={!write || isLoading} onClick={() => write?.()}>
+      <button
+        disabled={!write || isLoading }
+        onClick={() => write?.()}
+      >
         {" "}
         Approve{" "}
       </button>
@@ -52,6 +56,7 @@ function Approve() {
 }
 
 function GetAllowance() {
+  const { address } = useAccount();
   const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
   const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
 
@@ -59,8 +64,8 @@ function GetAllowance() {
     address: tokenAddress,
     abi: erc20ABI,
     functionName: "allowance",
-    args: ["0x76BCF35A7D0F9Ab3B33952920AEC7f229E839a0F", airdropAddress],
-  })
+    args: [address!, airdropAddress],
+  });
 
   return <div>Allowance: {allowance?.toString()}</div>;
 }
