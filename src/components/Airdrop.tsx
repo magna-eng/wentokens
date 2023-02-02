@@ -53,10 +53,7 @@ function AirdropETH() {
   const { config } = usePrepareAirdropAirdropEth({
     args: [
       ["0xBE77A2C0c6948553Bb8F9a24Cb4414485AE53BcD"],
-      [
-        ethers.utils.parseUnits("0.01", "ether"),
-        ethers.utils.parseUnits("0.01", "ether"),
-      ],
+      [ethers.utils.parseUnits("0.01", "ether")],
     ],
     overrides: {
       value: ethers.utils.parseUnits("0.02", "ether"),
