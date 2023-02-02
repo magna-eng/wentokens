@@ -1,7 +1,7 @@
 import { useAccount } from 'wagmi'
 import { tw } from 'typewind'
 
-import { Account, Connect, ERC20, NetworkSwitcher } from './components'
+import { Account, Airdrop, Connect, ERC20, NetworkSwitcher } from './components'
 
 export function App() {
   const { isConnected } = useAccount()
@@ -21,9 +21,11 @@ export function App() {
         <>
           <Account />
           <hr />
+          <NetworkSwitcher />
+          <hr />
           <ERC20 />
           <hr />
-          <NetworkSwitcher />
+          <Airdrop />
         </>
       )}
     </>
