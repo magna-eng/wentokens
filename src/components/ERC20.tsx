@@ -1,11 +1,12 @@
-import { BigNumber, ethers } from "ethers";
-import { useWaitForTransaction } from "wagmi";
-
+import { ethers } from "ethers";
 import {
-  usePrepareErc20Approve,
-  useErc20Approve,
-  useErc20Allowance,
-} from "../generated";
+  erc20ABI,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
+
 
 export function ERC20() {
   return (
@@ -18,20 +19,22 @@ export function ERC20() {
 
 function Approve() {
   const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
+  const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
 
-  const { config } = usePrepareErc20Approve({
+  const { config } = usePrepareContractWrite({
+    address: tokenAddress,
+    abi: erc20ABI,
+    functionName: "approve",
     args: [airdropAddress, ethers.utils.parseUnits("1000", "ether")],
-    enabled: true,
   });
 
-  const { data, write } = useErc20Approve({
-    ...config,
-    onSuccess: () => console.log("Approval transaction sent!"),
-  });
+  const { data, write } = useContractWrite(config);
 
-  const { refetch } = useErc20Allowance({
+  const { refetch } = useContractRead({
+    address: tokenAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
     args: ["0x76BCF35A7D0F9Ab3B33952920AEC7f229E839a0F", airdropAddress],
-    enabled: false,
   });
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
@@ -50,11 +53,14 @@ function Approve() {
 
 function GetAllowance() {
   const airdropAddress = "0x93c1313F006669130e37626BB85558a378703181";
+  const tokenAddress = "0x6292F13202e6d418136aa7d40e1BF85F3e394682";
 
-  const { data: allowance } = useErc20Allowance({
+  const { data: allowance } = useContractRead({
+    address: tokenAddress,
+    abi: erc20ABI,
+    functionName: "allowance",
     args: ["0x76BCF35A7D0F9Ab3B33952920AEC7f229E839a0F", airdropAddress],
-    enabled: true,
-  });
+  })
 
   return <div>Allowance: {allowance?.toString()}</div>;
 }

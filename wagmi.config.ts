@@ -7,9 +7,6 @@ export default defineConfig({
   plugins: [
     foundry({
       deployments: {
-        ERC20: {
-          [chains.goerli.id]: "0x6292F13202e6d418136aa7d40e1BF85F3e394682",
-        },
         Airdrop: {
           [chains.goerli.id]: "0x93c1313F006669130e37626BB85558a378703181",
         },
