@@ -8,12 +8,12 @@ export function Connect() {
   return (
     <div>
       <div>
-        {isConnected && <button onClick={() => disconnect()}>Disconnect from {connector?.name}</button>}
+        {isConnected && <button className="btn" onClick={() => disconnect()}>Disconnect</button>}
 
         {connectors
           .filter(x => x.ready && x.id !== connector?.id)
           .map(x => (
-            <button key={x.id} onClick={() => connect({ connector: x })}>
+            <button key={x.id} onClick={() => connect({ connector: x })} className="btn">
               {x.name}
               {isLoading && x.id === pendingConnector?.id && ' (connecting)'}
             </button>
