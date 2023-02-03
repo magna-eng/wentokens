@@ -1,5 +1,6 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import eslint from 'vite-plugin-eslint';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,5 +13,5 @@ export default defineConfig({
       util: 'util',
     },
   },
-  plugins: [react({ babel: { plugins: ['typewind/babel'] }})],
-})
+  plugins: [eslint(), react({ babel: { plugins: ['typewind/babel'] } })],
+});
