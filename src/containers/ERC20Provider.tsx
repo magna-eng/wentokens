@@ -90,7 +90,7 @@ function useApproveAllowance(tokenAddress: Address, onPending: () => void, onSuc
 type AirdropRecipient = {
   address: Address;
   amount: BigNumber;
-}
+};
 // Prepares the airdrop
 function useApproveAirdrop(
   tokenAddress: Address,
@@ -142,7 +142,8 @@ function Toast({ messages }: IToastProps) {
   );
 }
 
-const recipientsParser = z.preprocess(res => {
+const recipientsParser = z.preprocess(
+  res => {
     const separator = /[^0-9a-fA-Fx]/;
     const tokens = (res as string).split(separator);
     const ret: AirdropRecipient[] = [];
@@ -154,21 +155,24 @@ const recipientsParser = z.preprocess(res => {
       });
     }
     return ret;
-  }, z.array(
-  z.object({
-    address: z.coerce.string().startsWith('0x').length(42),
-    amount: z.instanceof(BigNumber).refine(b => b.gte(BigNumber.from(0)))
-  }),
-));
+  },
+  z.array(
+    z.object({
+      address: z.coerce.string().startsWith('0x').length(42),
+      amount: z.instanceof(BigNumber).refine(b => b.gte(BigNumber.from(0))),
+    }),
+  ),
+);
 
 export default function ERC20() {
-  const [tokenAddress, setTokenAddress] = useState<Address>('0x6292F13202e6d418136aa7d40e1BF85F3e394682');
+  const [tokenAddress, setTokenAddress] = useState<Address>('0x');
   const [rawRecipients, setRawRecipients] = useState<string>('');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
   const [recipientsError, setRecipientsError] = useState<ZodError>();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const { name: tokenName, symbol: tokenSymbol, balance: tokenBalance } = useTokenData(tokenAddress);
+  const formattedTokenBalance = tokenBalance ? ethers.utils.formatUnits(tokenBalance, 'ether') : '0';
 
   const { isLoading: allowanceIsLoading, write: approveAllowance } = useApproveAllowance(
     tokenAddress,
@@ -205,7 +209,6 @@ export default function ERC20() {
 
   const handleTokenAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value;
-    if (rawInput.length < 2) return setTokenAddress('0x');
     setTokenAddress(rawInput as Address);
   };
 
@@ -243,7 +246,8 @@ export default function ERC20() {
         <div className="mt-2">
           {validToken ? (
             <div>
-              You have {tokenBalance?.toBigInt?.()?.toString?.() ?? 0} {tokenSymbol} ({tokenName}) token.
+              You have <span className="text-secondary">{formattedTokenBalance}</span> {tokenSymbol} ({tokenName})
+              token.
             </div>
           ) : (
             'Enter a valid token address to see your available balance.'
@@ -260,15 +264,14 @@ export default function ERC20() {
               onChange={handleRecipientsChange}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
-            <button
-              className="btn btn-secondary w-1/4"
-              onClick={submitRecipients}
-            >
+            <button className="btn btn-secondary w-1/4" onClick={submitRecipients}>
               Submit
             </button>
-            {!recipients && <button disabled={airdropIsLoading} onClick={() => airdropWrite?.()} className="btn btn-secondary w-1/4">
-              Submit
-            </button>}
+            {!recipients && (
+              <button disabled={airdropIsLoading} onClick={() => airdropWrite?.()} className="btn btn-secondary w-1/4">
+                Submit
+              </button>
+            )}
           </div>
         )}
       </div>
