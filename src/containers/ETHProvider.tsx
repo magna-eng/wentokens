@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { useWaitForTransaction } from 'wagmi';
 import { usePrepareAirdropAirdropEth, useAirdropAirdropEth } from '../generated';
 
-export function ETH() {
+export default function ETH() {
   return (
     <div>
       <center>
@@ -11,6 +11,8 @@ export function ETH() {
     </div>
   );
 }
+
+// TODO: implement
 
 function AirdropETH() {
   const { config } = usePrepareAirdropAirdropEth({
