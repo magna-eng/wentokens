@@ -41,7 +41,12 @@ export function App() {
 
       {isConnected && (
         // MOVE CENTER STYLES INTO PROVIDER
-        <center>{airdropType === AirdropType.ERC20 ? <ERC20Provider /> : <ETHProvider />}</center>
+        <div>
+          <br />
+          <br />
+          <br />
+          <center>{airdropType === AirdropType.ERC20 ? <ERC20Provider /> : <ETHProvider />}</center>
+        </div>
       )}
     </div>
   );
