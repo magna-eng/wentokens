@@ -42,10 +42,18 @@ function useTokenData(tokenAddress: Address) {
     enabled: !!address,
   });
 
+  const { data: decimals } = useContractRead({
+    abi: erc20ABI,
+    address: tokenAddress,
+    functionName: 'decimals',
+    enabled: !!address,
+  });
+
   return {
     name,
     symbol,
     balance,
+    decimals,
   };
 }
 
@@ -171,19 +179,24 @@ export default function ERC20() {
   const [recipientsError, setRecipientsError] = useState<ZodError>();
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const { name: tokenName, symbol: tokenSymbol, balance: tokenBalance } = useTokenData(tokenAddress);
-  const formattedTokenBalance = tokenBalance ? ethers.utils.formatUnits(tokenBalance, 'ether') : '0';
+  const {
+    name: tokenName,
+    symbol: tokenSymbol,
+    balance: tokenBalance,
+    decimals: tokenDecimals,
+  } = useTokenData(tokenAddress);
+  const formattedTokenBalance = tokenBalance ? ethers.utils.formatUnits(tokenBalance, tokenDecimals) : '0';
 
-  const { isLoading: allowanceIsLoading, write: approveAllowance } = useApproveAllowance(
+  const { isLoading: allowanceIsLoading, write: approveWrite } = useApproveAllowance(
     tokenAddress,
     () =>
       pushToast({
-        text: 'Allocate transaction pending...',
+        text: 'Approval transaction pending...',
         className: 'alert-info',
       }),
     () =>
       pushToast({
-        text: 'Allocate transaction successful!',
+        text: 'Approval transaction successful!',
         className: 'alert-success',
       }),
   );
