@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { tw } from 'typewind';
 import {
@@ -17,6 +17,13 @@ import {
   useAirdropAirdropErc20,
   airdropAddress as airdropAddressByChain,
 } from '../generated';
+import { AirdropRecipient } from '../types/airdrop';
+import { recipientsParser } from '../types/parsers';
+import { Toast, ToastMessage } from '../ui/Toast';
+
+// TODO: Keyboard shortcuts
+// TODO: Better toasts
+// TODO: proper error handling
 
 // Fetches the relevant metadata of the token at the provided address
 function useTokenData(tokenAddress: Address) {
@@ -58,7 +65,7 @@ function useTokenData(tokenAddress: Address) {
 }
 
 // Approves the airdrop
-function useApproveAllowance(tokenAddress: Address, onPending: () => void, onSuccess: () => void) {
+function useApproveAllowance(tokenAddress: Address, amount: BigNumber, onPending: () => void, onSuccess: () => void) {
   const { address } = useAccount();
   const chainId = useChainId();
   const airdropAddress = airdropAddressByChain[chainId as 5];
@@ -67,7 +74,7 @@ function useApproveAllowance(tokenAddress: Address, onPending: () => void, onSuc
     address: tokenAddress,
     abi: erc20ABI,
     functionName: 'approve',
-    args: [airdropAddress, ethers.utils.parseUnits('1000', 'ether')],
+    args: [airdropAddress, amount],
     enabled: Boolean(tokenAddress),
   });
 
@@ -95,10 +102,6 @@ function useApproveAllowance(tokenAddress: Address, onPending: () => void, onSuc
   };
 }
 
-type AirdropRecipient = {
-  address: Address;
-  amount: BigNumber;
-};
 // Prepares the airdrop
 function useApproveAirdrop(
   tokenAddress: Address,
@@ -113,7 +116,6 @@ function useApproveAirdrop(
       recipients.map(({ amount }) => amount),
       recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
     ],
-    enabled: true,
   });
 
   const { data, write } = useAirdropAirdropErc20({ ...config, onSuccess: onPending });
@@ -127,56 +129,12 @@ function useApproveAirdrop(
   };
 }
 
-type ToastMessage = {
-  text: string;
-  className?: string;
-};
-
-interface IToastProps {
-  messages: ToastMessage[];
-}
-
-function Toast({ messages }: IToastProps) {
-  return (
-    <div className="toast">
-      {messages.map(({ text, className }) => (
-        <div className={`alert ${className}`}>
-          <div>
-            <span>{text}</span>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const recipientsParser = z.preprocess(
-  res => {
-    const separator = /[^0-9a-fA-Fx]/;
-    const tokens = (res as string).split(separator);
-    const ret: AirdropRecipient[] = [];
-    console.log(tokens);
-    for (let i = 0; i < tokens.length; i += 2) {
-      ret.push({
-        address: tokens[i] as Address,
-        amount: BigNumber.from(tokens[i + 1]),
-      });
-    }
-    return ret;
-  },
-  z.array(
-    z.object({
-      address: z.coerce.string().startsWith('0x').length(42),
-      amount: z.instanceof(BigNumber).refine(b => b.gte(BigNumber.from(0))),
-    }),
-  ),
-);
-
 export default function ERC20() {
   const [tokenAddress, setTokenAddress] = useState<Address>('0x');
   const [rawRecipients, setRawRecipients] = useState<string>('');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
-  const [recipientsError, setRecipientsError] = useState<ZodError>();
+  const [recipientsError, setRecipientsError] = useState<Error>();
+  const [airdropPending, setAirdropPending] = useState<boolean>(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const {
@@ -187,34 +145,45 @@ export default function ERC20() {
   } = useTokenData(tokenAddress);
   const formattedTokenBalance = tokenBalance ? ethers.utils.formatUnits(tokenBalance, tokenDecimals) : '0';
 
-  const { isLoading: allowanceIsLoading, write: approveWrite } = useApproveAllowance(
-    tokenAddress,
-    () =>
-      pushToast({
-        text: 'Approval transaction pending...',
-        className: 'alert-info',
-      }),
-    () =>
-      pushToast({
-        text: 'Approval transaction successful!',
-        className: 'alert-success',
-      }),
-  );
-
   const { isLoading: airdropIsLoading, write: airdropWrite } = useApproveAirdrop(
     tokenAddress,
-    [],
+    recipients,
     () =>
       pushToast({
         text: 'Airdrop transaction pending...',
         className: 'alert-info',
       }),
-    () =>
+    function onSuccess() {
+      setAirdropPending(false);
       pushToast({
         text: 'Airdrop transaction successful!',
         className: 'alert-success',
-      }),
+      });
+    },
   );
+
+  const { isLoading: allowanceIsLoading, write: approveWrite } = useApproveAllowance(
+    tokenAddress,
+    recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
+    () =>
+      pushToast({
+        text: 'Approval transaction pending...',
+        className: 'alert-info',
+      }),
+    function onSuccess() {
+      pushToast({
+        text: 'Approval transaction successful!',
+        className: 'alert-success',
+      });
+      airdropWrite?.();
+    },
+  );
+
+  useEffect(() => {
+    if (airdropPending) {
+      approveWrite?.();
+    }
+  }, [airdropPending]);
 
   const pushToast = (message: ToastMessage) => {
     setToasts(prev => [...prev, message]);
@@ -229,18 +198,15 @@ export default function ERC20() {
     setRawRecipients(e.target.value);
   };
 
-  const submitRecipients = () => {
+  const submitRecipients = useCallback(() => {
     try {
-      const recipients = recipientsParser.parse(rawRecipients) as AirdropRecipient[];
+      const recipients = recipientsParser(tokenDecimals).parse(rawRecipients) as AirdropRecipient[];
       setRecipients(recipients);
-      alert(recipients);
+      setAirdropPending(true);
     } catch (err) {
-      if (err instanceof ZodError) {
-        setRecipientsError(err);
-      }
-      console.error(err);
+      setRecipientsError(err as Error);
     }
-  };
+  }, [tokenDecimals, rawRecipients]);
 
   const validToken = tokenName && tokenSymbol;
 
@@ -248,10 +214,10 @@ export default function ERC20() {
     <div className={tw.container}>
       {!!toasts.length && <Toast messages={toasts} />}
 
-      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap}>
+      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
         <h2 className={tw.text_2xl}>Token Address</h2>
         <input
-          className="input input-bordered input-secondary w-full"
+          className="input input-bordered input-secondary"
           spellCheck={false}
           value={tokenAddress}
           onChange={handleTokenAddressChange}
@@ -277,14 +243,11 @@ export default function ERC20() {
               onChange={handleRecipientsChange}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
+            <br />
             <button className="btn btn-secondary w-1/4" onClick={submitRecipients}>
-              Submit
+              Airdrop
             </button>
-            {!recipients && (
-              <button disabled={airdropIsLoading} onClick={() => airdropWrite?.()} className="btn btn-secondary w-1/4">
-                Submit
-              </button>
-            )}
+            {recipientsError && recipientsError.message}
           </div>
         )}
       </div>

@@ -8,9 +8,13 @@ interface ISwitchProps {
 
 export default function Switch({ selected, setSelected }: ISwitchProps) {
   return (
-    <div className="tabs tabs-boxed">
+    <div className="tabs tabs-boxed p-0">
       {Object.values(AirdropType).map(option => (
-        <button className={cls('tab tab-md', selected === option && 'tab-active')} onClick={() => setSelected(option)}>
+        <button
+          key={option}
+          className={cls('tab tab-lg', selected === option && 'tab-active')}
+          onClick={() => setSelected(option)}
+        >
           {option}
         </button>
       ))}
