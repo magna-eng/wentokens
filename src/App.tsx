@@ -40,11 +40,9 @@ export function App() {
       )}
 
       {isConnected && (
-        // MOVE CENTER STYLES INTO PROVIDER
-        <div>
-          <br />
-          <br />
-          <br />
+        // add margin top to the container
+
+        <div className="mt-10">
           <center>{airdropType === AirdropType.ERC20 ? <ERC20Provider /> : <ETHProvider />}</center>
         </div>
       )}
