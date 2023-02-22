@@ -21,17 +21,26 @@ contract Airdrop {
     ) external payable {
         // looop through _recipients
         assembly {
+            // store runningTotal
+            let runningTotal := 0
+            // store pointer to _recipients
+            let recipientsPtr := add(_recipients, 0x20)
+            // store pointer to _amounts
+            let amountsPtr := add(_amounts, 0x20)
             for {
                 let i := 0
             } lt(i, mload(_recipients)) {
                 // increment i
                 i := add(i, 1)
+                // increment pointers
+                recipientsPtr := add(recipientsPtr, 0x20)
+                amountsPtr := add(amountsPtr, 0x20)
             } {
                 // send _amounts[i] to _recipients[i]
                 let success := call(
                     gas(),
-                    mload(add(add(_recipients, 0x20), mul(i, 0x20))), // load address
-                    mload(add(add(_amounts, 0x20), mul(i, 0x20))), // load amount
+                    mload(recipientsPtr), // load address
+                    mload(amountsPtr), // load amount
                     0,
                     0,
                     0,
@@ -41,6 +50,12 @@ contract Airdrop {
                 if iszero(success) {
                     revert(0, 0)
                 }
+                // add _amounts[i] to runningTotal
+                runningTotal := add(runningTotal, mload(amountsPtr))
+            }
+            // revert if runningTotal != msg.value
+            if iszero(eq(runningTotal, callvalue())) {
+                revert(0, 0)
             }
         }
     }
@@ -87,11 +102,19 @@ contract Airdrop {
             if iszero(successTransferFrom) {
                 revert(0, 0)
             }
+            // store pointer to _recipients
+            let recipientsPtr := add(_recipients, 0x20)
+            // store pointer to _amounts
+            let amountsPtr := add(_amounts, 0x20)
             // loop through _recipients
             for {
                 let i := 0
             } lt(i, mload(_recipients)) {
+                // increment i
                 i := add(i, 1)
+                // increment pointers
+                recipientsPtr := add(recipientsPtr, 0x20)
+                amountsPtr := add(amountsPtr, 0x20)
             } {
                 // store transfer selector
                 let transferData := add(0x20, mload(0x40))
@@ -99,12 +122,12 @@ contract Airdrop {
                 // store _recipients[i]
                 mstore(
                     add(transferData, 0x04),
-                    mload(add(add(_recipients, 0x20), mul(i, 0x20)))
+                    mload(recipientsPtr)
                 )
                 // store _amounts[i]
                 mstore(
                     add(transferData, 0x24),
-                    mload(add(add(_amounts, 0x20), mul(i, 0x20)))
+                    mload(amountsPtr)
                 )
                 // call transfer for _amounts[i] to _recipients[i]
                 let successTransfer := call(
@@ -119,7 +142,7 @@ contract Airdrop {
                 // revert if call fails
                 if iszero(successTransfer) {
                     revert(0, 0)
-                }
+                }  
             }
         }
     }
