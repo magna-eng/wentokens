@@ -16,31 +16,32 @@ contract Airdrop {
      * @param _amounts  list of amounts to send each recipient
      */
     function airdropETH(
-        address[] memory _recipients,
-        uint256[] memory _amounts
+        address[] calldata _recipients,
+        uint256[] calldata _amounts
     ) external payable {
         // looop through _recipients
         assembly {
             // store runningTotal
             let runningTotal := 0
-            // store pointer to _recipients
-            let recipientsPtr := add(_recipients, 0x20)
-            // store pointer to _amounts
-            let amountsPtr := add(_amounts, 0x20)
+            // store length of _recipients
+            let sz := _amounts.length
             for {
                 let i := 0
-            } lt(i, mload(_recipients)) {
+            } lt(i, sz) {
                 // increment i
                 i := add(i, 1)
-                // increment pointers
-                recipientsPtr := add(recipientsPtr, 0x20)
-                amountsPtr := add(amountsPtr, 0x20)
             } {
+                // store offset for _amounts[i]
+                let offset := mul(i, 0x20)
+                // store _amounts[i]
+                let amt := calldataload(add(_amounts.offset, offset))
+                // store _recipients[i]
+                let recp := calldataload(add(_recipients.offset, offset))
                 // send _amounts[i] to _recipients[i]
                 let success := call(
                     gas(),
-                    mload(recipientsPtr), // load address
-                    mload(amountsPtr), // load amount
+                    recp, // address
+                    amt, // amount
                     0,
                     0,
                     0,
@@ -51,7 +52,7 @@ contract Airdrop {
                     revert(0, 0)
                 }
                 // add _amounts[i] to runningTotal
-                runningTotal := add(runningTotal, mload(amountsPtr))
+                runningTotal := add(runningTotal, amt)
             }
             // revert if runningTotal != msg.value
             if iszero(eq(runningTotal, callvalue())) {
@@ -69,8 +70,8 @@ contract Airdrop {
      */
     function airdropERC20(
         IERC20 _token,
-        address[] memory _recipients,
-        uint256[] memory _amounts,
+        address[] calldata _recipients,
+        uint256[] calldata _amounts,
         uint256 _total
     ) external {
         // bytes selector for transferFrom(address,address,uint256)
@@ -102,32 +103,36 @@ contract Airdrop {
             if iszero(successTransferFrom) {
                 revert(0, 0)
             }
-            // store pointer to _recipients
-            let recipientsPtr := add(_recipients, 0x20)
-            // store pointer to _amounts
-            let amountsPtr := add(_amounts, 0x20)
+
+            // store transfer selector
+            let transferData := add(0x20, mload(0x40))
+            mstore(transferData, transfer)
+
+            // store length of _recipients
+            let sz := _amounts.length
+
             // loop through _recipients
             for {
                 let i := 0
-            } lt(i, mload(_recipients)) {
+            } lt(i, sz) {
                 // increment i
                 i := add(i, 1)
-                // increment pointers
-                recipientsPtr := add(recipientsPtr, 0x20)
-                amountsPtr := add(amountsPtr, 0x20)
             } {
-                // store transfer selector
-                let transferData := add(0x20, mload(0x40))
-                mstore(transferData, transfer)
+                // store offset for _amounts[i]
+                let offset := mul(i, 0x20)
+                // store _amounts[i]
+                let amt := calldataload(add(_amounts.offset, offset))
                 // store _recipients[i]
+                let recp := calldataload(add(_recipients.offset, offset))
+                // store _recipients[i] in transferData
                 mstore(
                     add(transferData, 0x04),
-                    mload(recipientsPtr)
+                    recp
                 )
-                // store _amounts[i]
+                // store _amounts[i] in transferData
                 mstore(
                     add(transferData, 0x24),
-                    mload(amountsPtr)
+                    amt
                 )
                 // call transfer for _amounts[i] to _recipients[i]
                 let successTransfer := call(
