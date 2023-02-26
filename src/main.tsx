@@ -6,7 +6,7 @@ import { App } from './App';
 import { client, chains } from './wagmi';
 
 import '@rainbow-me/rainbowkit/styles.css';
-import './index.scss';
+import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

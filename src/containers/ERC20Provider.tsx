@@ -11,7 +11,6 @@ import {
   Address,
   useChainId,
 } from 'wagmi';
-import z, { ZodError } from 'zod';
 import {
   usePrepareAirdropAirdropErc20,
   useAirdropAirdropErc20,
@@ -19,6 +18,7 @@ import {
 } from '../generated';
 import { AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
+import Button from '../ui/Button';
 import { Toast, ToastMessage } from '../ui/Toast';
 
 // TODO: Keyboard shortcuts
@@ -226,7 +226,7 @@ export default function ERC20() {
           {validToken ? (
             <div>
               You have <span className={tw.text_secondary}>{formattedTokenBalance}</span> {tokenSymbol} ({tokenName})
-              token.
+              token
             </div>
           ) : (
             'Enter a valid token address to see your available balance.'
@@ -234,7 +234,7 @@ export default function ERC20() {
         </div>
 
         {validToken && (
-          <div className={tw.h_72}>
+          <div className={tw.min_h_fit}>
             <h2 className={tw.text_2xl}>Recipients and Amounts</h2>
             <h4>Enter one address and amount of {tokenName ?? 'your token'} on each line. Supports any format.</h4>
             <textarea
@@ -244,9 +244,9 @@ export default function ERC20() {
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
             <br />
-            <button className={tw.btn.btn_secondary.w_["1/4"]} onClick={submitRecipients}>
+            <Button className={tw.btn_primary.w_["1/4"]} onClick={submitRecipients}>
               Airdrop
-            </button>
+            </Button>
             {recipientsError && recipientsError.message}
           </div>
         )}

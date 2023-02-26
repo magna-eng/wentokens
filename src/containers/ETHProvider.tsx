@@ -7,15 +7,17 @@ import {
   useAirdropAirdropEth,
   airdropAddress as airdropAddressByChain,
 } from '../generated';
-import { AirdropRecipient } from '../types/airdrop';
+import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
 import { Toast, ToastMessage } from '../ui/Toast';
+import Button from '../ui/Button';
+import Switch from '../ui/Switch';
 
-export default function ETH() {
+export default function ETH(props: IAirdropEthProps) {
   return (
     <div>
       <center>
-        <AirdropETH />
+        <AirdropETH {...props} />
       </center>
     </div>
   );
@@ -47,7 +49,12 @@ function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuc
   };
 }
 
-function AirdropETH() {
+interface IAirdropEthProps {
+  selected: AirdropTypeEnum;
+  setSelected: (selected: AirdropTypeEnum) => void;
+}
+
+function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
   const [rawRecipients, setRawRecipients] = useState<string>('');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
   const [recipientsError, setRecipientsError] = useState<Error>();
@@ -57,7 +64,6 @@ function AirdropETH() {
   const { address, isConnected } = useAccount();
   const {
     data: balance,
-    isError,
     isLoading: balanceIsLoading,
   } = useBalance({
     address: address,
@@ -107,11 +113,11 @@ function AirdropETH() {
     <div className={tw.container}>
       {!!toasts.length && <Toast messages={toasts} />}
 
-      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
-        <div className={tw.mt_2}>
+      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.w_["1/2"]}>
+        <div className={tw.mt_2.text_neutral_400}>
           {isConnected ? (
-            <div>
-              You have <span className={tw.text_secondary}>{balance?.formatted}</span> {balance?.symbol}.
+            <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs}>
+              You have {balance?.formatted} {balance?.symbol}
             </div>
           ) : (
             'Enter a valid token address to see your available balance.'
@@ -119,18 +125,19 @@ function AirdropETH() {
         </div>
 
         {isConnected && (
-          <div className={tw.h_72}>
-            <h2 className={tw.text_2xl}>Recipients and Amounts</h2>
-            <h4>Enter one address and amount of {balance?.symbol} on each line. Supports any format.</h4>
+          <div className={tw.min_h_fit}>
+            <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
+            <h4 className={tw.text_neutral_400.mb_8}>Enter one address and amount of {balance?.symbol} on each line. Supports any format.</h4>
+            <Switch selected={selected} setSelected={setSelected} />
             <textarea
               spellCheck={false}
-              className={tw.input.input_bordered.input_secondary.w_full.my_4.min_h_full.h_max}
+              className={tw.input.input_bordered.input_secondary.text_base_100.bg_transparent.border_2.border_neutral_700.py_4.px_6.w_full.my_4.min_h_["30vh"].h_max}
               onChange={handleRecipientsChange}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
-            <button className={tw.btn.btn_secondary.w_["1/4"]} onClick={submitRecipients}>
+            <Button onClick={submitRecipients} isOutline>
               Airdrop
-            </button>
+            </Button>
             {recipientsError && recipientsError.message}
           </div>
         )}

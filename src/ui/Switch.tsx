@@ -9,14 +9,14 @@ interface ISwitchProps {
 
 export default function Switch({ selected, setSelected }: ISwitchProps) {
   return (
-    <div className={tw.tabs.tabs_boxed.p_0}>
+    <div className={tw.w_full.border_2.border_neutral_700.rounded.p_1}>
       {Object.values(AirdropType).map(option => (
         <button
           key={option}
-          className={cls('tab tab-lg', selected === option && 'tab-active')}
+          className={cls(tw.tab.tab_lg.w_['1/2'], selected === option && tw.btn)}
           onClick={() => setSelected(option)}
         >
-          {option}
+          <span className={selected === option ? tw.text_base_100 : tw.text_neutral_500}>{option}</span>
         </button>
       ))}
     </div>

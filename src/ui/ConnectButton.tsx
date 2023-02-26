@@ -1,6 +1,6 @@
 import { tw } from "typewind";
-
 import { ConnectButton as BaseButton } from '@rainbow-me/rainbowkit';
+
 export default function ConnectButton() {
   return (
     <BaseButton.Custom>
@@ -24,21 +24,21 @@ export default function ConnectButton() {
             {(() => {
               if (!connected) {
                 return (
-                  <button className={tw.btn.btn_secondary} onClick={openConnectModal}>
+                  <button className={tw.btn.btn_primary + " btn-logo"} onClick={openConnectModal}>
                     Connect Wallet
                   </button>
                 );
               }
               if (chain.unsupported) {
                 return (
-                  <button className={tw.btn.btn_secondary} onClick={openChainModal}>
+                  <button className={tw.btn.btn_primary} onClick={openChainModal}>
                     Wrong network
                   </button>
                 );
               }
               return (
                 <div className={tw.btn_group}>
-                  <button className={tw.btn} onClick={openChainModal}>
+                  <button className={tw.btn.btn_outline} onClick={openChainModal}>
                     {chain.hasIcon && (
                       <div
                         className={tw.h_6}
@@ -54,11 +54,11 @@ export default function ConnectButton() {
                         )}
                       </div>
                     )}
-                    {chain.name}
+                    <span className={tw.text_base_100}>{chain.name}</span>
                   </button>
-                  <button className={tw.btn.btn_secondary} onClick={openAccountModal} type="button">
-                    {account.displayName}
-                    {account.displayBalance ? ` (${account.displayBalance})` : ''}
+                  <button className={tw.btn.btn_outline} onClick={openAccountModal} type="button">
+                    <span className={tw.text_base_100}>{account.displayName}</span>
+                    {account.displayBalance ? <span className={tw.text_primary.ml_1}> ({account.displayBalance})</span> : ''}
                   </button>
                 </div>
               );

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts from Google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@500&family=Inter:wght@500&display=swap');
+
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    overflow: auto;
+    background-color: #050505;
+}
