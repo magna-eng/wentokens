@@ -1,7 +1,9 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { tw } from 'typewind';
-import { useWaitForTransaction, useBalance, useAccount, Address } from 'wagmi';
+import { useWaitForTransaction, useBalance, useAccount } from 'wagmi';
+import TextareaAutosize from 'react-textarea-autosize';
+import { Icon } from '@iconify/react';
 import {
   usePrepareAirdropAirdropEth,
   useAirdropAirdropEth,
@@ -55,11 +57,9 @@ interface IAirdropEthProps {
 }
 
 function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
-  const [rawRecipients, setRawRecipients] = useState<string>('');
+  const [rawRecipients, setRawRecipients] = useState<string>('0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
-  const [recipientsError, setRecipientsError] = useState<Error>();
   const [airdropPending, setAirdropPending] = useState<boolean>(false);
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const { address, isConnected } = useAccount();
   const {
@@ -129,16 +129,16 @@ function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
             <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
             <h4 className={tw.text_neutral_400.mb_8}>Enter one address and amount of {balance?.symbol} on each line. Supports any format.</h4>
             <Switch selected={selected} setSelected={setSelected} />
-            <textarea
+            <TextareaAutosize
               spellCheck={false}
               className={tw.input.input_bordered.input_secondary.text_base_100.bg_transparent.border_2.border_neutral_700.py_4.px_6.w_full.my_4.min_h_["30vh"].h_max}
               onChange={handleRecipientsChange}
+              defaultValue={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
-            <Button onClick={submitRecipients} isOutline>
-              Airdrop
+            <Button onClick={submitRecipients}>
+              Airdrop <Icon icon="ri:arrow-right-up-line" />
             </Button>
-            {recipientsError && recipientsError.message}
           </div>
         )}
       </div>

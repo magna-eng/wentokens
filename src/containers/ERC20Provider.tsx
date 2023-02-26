@@ -11,15 +11,16 @@ import {
   Address,
   useChainId,
 } from 'wagmi';
+import { Icon } from '@iconify/react';
 import {
   usePrepareAirdropAirdropErc20,
   useAirdropAirdropErc20,
   airdropAddress as airdropAddressByChain,
 } from '../generated';
-import { AirdropRecipient } from '../types/airdrop';
+import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
 import Button from '../ui/Button';
-import { Toast, ToastMessage } from '../ui/Toast';
+import Switch from '../ui/Switch';
 
 // TODO: Keyboard shortcuts
 // TODO: Better toasts
@@ -129,7 +130,12 @@ function useApproveAirdrop(
   };
 }
 
-export default function ERC20() {
+interface IAirdropEthProps {
+  selected: AirdropTypeEnum;
+  setSelected: (selected: AirdropTypeEnum) => void;
+}
+
+export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const [tokenAddress, setTokenAddress] = useState<Address>('0x');
   const [rawRecipients, setRawRecipients] = useState<string>('');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
@@ -212,42 +218,38 @@ export default function ERC20() {
 
   return (
     <div className={tw.container}>
-      {!!toasts.length && <Toast messages={toasts} />}
 
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
-        <h2 className={tw.text_2xl}>Token Address</h2>
+        <h2 className={tw.text_3xl.text_base_100.mb_2}>Token Address</h2>
+        {!validToken ? <Switch selected={selected} setSelected={setSelected} /> : null }
         <input
-          className={tw.input.input_bordered.input_secondary}
+          className={tw.input.input_bordered.text_base_100.bg_transparent.border_2.border_neutral_700}
           spellCheck={false}
           value={tokenAddress}
           onChange={handleTokenAddressChange}
         />
-        <div className={tw.mt_2}>
-          {validToken ? (
             <div>
-              You have <span className={tw.text_secondary}>{formattedTokenBalance}</span> {tokenSymbol} ({tokenName})
-              token
+          <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs.mt_2}>
+            {validToken ? <>You have {formattedTokenBalance} {tokenSymbol}</>
+              : `Enter a valid token address to see your available balance.`}
             </div>
-          ) : (
-            'Enter a valid token address to see your available balance.'
-          )}
         </div>
 
-        {validToken && (
+        {validToken || true && (
           <div className={tw.min_h_fit}>
-            <h2 className={tw.text_2xl}>Recipients and Amounts</h2>
-            <h4>Enter one address and amount of {tokenName ?? 'your token'} on each line. Supports any format.</h4>
-            <textarea
+            <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
+            <h4 className={tw.text_neutral_400.mb_8}>Enter one address and amount of {tokenName ?? 'your token'} on each line. Supports any format.</h4>
+            <Switch selected={selected} setSelected={setSelected} />
+            <TextareaAutosize
               spellCheck={false}
-              className={tw.input.input_bordered.input_secondary.w_full.my_4.min_h_full.h_max}
+              className={tw.input.input_bordered.input_secondary.text_base_100.bg_transparent.border_2.border_neutral_700.py_4.px_6.w_full.my_4.min_h_["30vh"].h_max}
               onChange={handleRecipientsChange}
+              defaultValue={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
-            <br />
-            <Button className={tw.btn_primary.w_["1/4"]} onClick={submitRecipients}>
-              Airdrop
+            <Button onClick={submitRecipients}>
+              Airdrop <Icon icon="ri:arrow-right-up-line" />
             </Button>
-            {recipientsError && recipientsError.message}
           </div>
         )}
       </div>
