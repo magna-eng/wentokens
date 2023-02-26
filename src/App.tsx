@@ -15,6 +15,7 @@ export function App() {
 
   return (
     <div className={tw.h_screen.bg_transparent}>
+      <Toaster theme="dark"/>
       <Navbar />
 
       {!isConnected && (

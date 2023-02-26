@@ -11,6 +11,8 @@ import {
   Address,
   useChainId,
 } from 'wagmi';
+import { toast } from 'sonner'
+import TextareaAutosize from 'react-textarea-autosize';
 import { Icon } from '@iconify/react';
 import {
   usePrepareAirdropAirdropErc20,
@@ -139,9 +141,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const [tokenAddress, setTokenAddress] = useState<Address>('0x');
   const [rawRecipients, setRawRecipients] = useState<string>('');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
-  const [recipientsError, setRecipientsError] = useState<Error>();
   const [airdropPending, setAirdropPending] = useState<boolean>(false);
-  const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const {
     name: tokenName,
@@ -154,33 +154,19 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const { isLoading: airdropIsLoading, write: airdropWrite } = useApproveAirdrop(
     tokenAddress,
     recipients,
-    () =>
-      pushToast({
-        text: 'Airdrop transaction pending...',
-        className: 'alert-info',
-      }),
+    () => toast('Airdrop transaction pending...'),
     function onSuccess() {
       setAirdropPending(false);
-      pushToast({
-        text: 'Airdrop transaction successful!',
-        className: 'alert-success',
-      });
+      toast.success('Airdrop transaction successful!');
     },
   );
 
   const { isLoading: allowanceIsLoading, write: approveWrite } = useApproveAllowance(
     tokenAddress,
     recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
-    () =>
-      pushToast({
-        text: 'Approval transaction pending...',
-        className: 'alert-info',
-      }),
+    () => toast('Approval transaction pending...'),
     function onSuccess() {
-      pushToast({
-        text: 'Approval transaction successful!',
-        className: 'alert-success',
-      });
+      toast.success('Approval transaction successful!');
       airdropWrite?.();
     },
   );
@@ -190,10 +176,6 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
       approveWrite?.();
     }
   }, [airdropPending]);
-
-  const pushToast = (message: ToastMessage) => {
-    setToasts(prev => [...prev, message]);
-  };
 
   const handleTokenAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value;
@@ -210,7 +192,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
       setRecipients(recipients);
       setAirdropPending(true);
     } catch (err) {
-      setRecipientsError(err as Error);
+      toast.error((err as Error).message);
     }
   }, [tokenDecimals, rawRecipients]);
 
@@ -228,11 +210,11 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
           value={tokenAddress}
           onChange={handleTokenAddressChange}
         />
-            <div>
+        <div>
           <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs.mt_2}>
             {validToken ? <>You have {formattedTokenBalance} {tokenSymbol}</>
               : `Enter a valid token address to see your available balance.`}
-            </div>
+          </div>
         </div>
 
         {validToken || true && (
@@ -249,7 +231,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
             />
             <Button onClick={submitRecipients}>
               Airdrop <Icon icon="ri:arrow-right-up-line" />
-            </Button>
+            </Button> 
           </div>
         )}
       </div>

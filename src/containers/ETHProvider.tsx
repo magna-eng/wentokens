@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { tw } from 'typewind';
+import { toast } from 'sonner'
 import { useWaitForTransaction, useBalance, useAccount } from 'wagmi';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Icon } from '@iconify/react';
@@ -11,7 +12,6 @@ import {
 } from '../generated';
 import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
-import { Toast, ToastMessage } from '../ui/Toast';
 import Button from '../ui/Button';
 import Switch from '../ui/Switch';
 
@@ -71,16 +71,9 @@ function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
 
   const { write: airdropWrite } = useAirdrop(
     recipients,
-    () =>
-      pushToast({
-        text: 'Airdrop transaction pending...',
-        className: 'alert-info',
-      }),
+    () => toast('Airdrop transaction pending...'),
     function onSuccess() {
-      pushToast({
-        text: 'Airdrop transaction successful!',
-        className: 'alert-success',
-      });
+      toast.success('Airdrop transaction successful!');
       airdropWrite?.();
     },
   );
@@ -90,10 +83,6 @@ function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
       airdropWrite?.();
     }
   }, [airdropPending]);
-
-  const pushToast = (message: ToastMessage) => {
-    setToasts(prev => [...prev, message]);
-  };
 
   const handleRecipientsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRawRecipients(e.target.value);
@@ -105,23 +94,17 @@ function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
       setRecipients(recipients);
       setAirdropPending(true);
     } catch (err) {
-      setRecipientsError(err as Error);
+      toast.error((err as Error).message);
     }
   };
 
   return (
     <div className={tw.container}>
-      {!!toasts.length && <Toast messages={toasts} />}
-
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.w_["1/2"]}>
         <div className={tw.mt_2.text_neutral_400}>
-          {isConnected ? (
             <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs}>
               You have {balance?.formatted} {balance?.symbol}
             </div>
-          ) : (
-            'Enter a valid token address to see your available balance.'
-          )}
         </div>
 
         {isConnected && (

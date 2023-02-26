@@ -1,5 +1,6 @@
 import { tw } from "typewind";
 import { ConnectButton as BaseButton } from '@rainbow-me/rainbowkit';
+import Button from './Button';
 
 export default function ConnectButton() {
   return (
@@ -24,9 +25,9 @@ export default function ConnectButton() {
             {(() => {
               if (!connected) {
                 return (
-                  <button className={tw.btn.btn_primary + " btn-logo"} onClick={openConnectModal}>
+                  <Button className={tw.btn.btn_primary + " btn-logo"} onClick={openConnectModal}>
                     Connect Wallet
-                  </button>
+                  </Button>
                 );
               }
               if (chain.unsupported) {
