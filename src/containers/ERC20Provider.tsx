@@ -217,15 +217,15 @@ export default function ERC20() {
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
         <h2 className={tw.text_2xl}>Token Address</h2>
         <input
-          className="input input-bordered input-secondary"
+          className={tw.input.input_bordered.input_secondary}
           spellCheck={false}
           value={tokenAddress}
           onChange={handleTokenAddressChange}
         />
-        <div className="mt-2">
+        <div className={tw.mt_2}>
           {validToken ? (
             <div>
-              You have <span className="text-secondary">{formattedTokenBalance}</span> {tokenSymbol} ({tokenName})
+              You have <span className={tw.text_secondary}>{formattedTokenBalance}</span> {tokenSymbol} ({tokenName})
               token.
             </div>
           ) : (
@@ -234,17 +234,17 @@ export default function ERC20() {
         </div>
 
         {validToken && (
-          <div className="h-72">
+          <div className={tw.h_72}>
             <h2 className={tw.text_2xl}>Recipients and Amounts</h2>
             <h4>Enter one address and amount of {tokenName ?? 'your token'} on each line. Supports any format.</h4>
             <textarea
               spellCheck={false}
-              className="input input-bordered input-secondary w-full my-4 min-h-full h-max"
+              className={tw.input.input_bordered.input_secondary.w_full.my_4.min_h_full.h_max}
               onChange={handleRecipientsChange}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
             <br />
-            <button className="btn btn-secondary w-1/4" onClick={submitRecipients}>
+            <button className={tw.btn.btn_secondary.w_["1/4"]} onClick={submitRecipients}>
               Airdrop
             </button>
             {recipientsError && recipientsError.message}

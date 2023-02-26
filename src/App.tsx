@@ -12,13 +12,13 @@ export function App() {
   const [airdropType, setAirdropType] = useState<AirdropTypeEnum>(AirdropType.ERC20);
 
   return (
-    <div className="h-screen">
-      <div className="navbar bg-base-100 p-4">
-        <div className="navbar-start">
-          <h1 className="text-4xl text-secondary">wentokens</h1>
+    <div className={tw.h_screen}>
+      <div className={tw.navbar.bg_base_100.p_4}>
+        <div className={tw.navbar_start}>
+          <h1 className={tw.text_4xl.text_secondary}>wentokens</h1>
         </div>
-        <div className="navbar-end gap-x-2">
-          <ul className="menu menu-horizontal px-1">
+        <div className={tw.navbar_end.gap_x_2}>
+          <ul className={tw.menu.menu_horizontal.px_1}>
             {isConnected && <Switch selected={airdropType} setSelected={setAirdropType} />}
           </ul>
           <ConnectButton />
@@ -26,11 +26,11 @@ export function App() {
       </div>
 
       {!isConnected && (
-        <div className="hero bg-base-200 min-h-[80%]">
-          <div className="hero-content text-center">
-            <div className="max-w-md">
-              <h1 className="text-5xl font-bold text-secondary">wentokens</h1>
-              <p className="py-6">The fastest airdrop tool in da wild west. Connect your wallet to get started.</p>
+        <div className={tw.hero.bg_base_200.min_h_[`80%`]}>
+          <div className={tw.hero_content.text_center}>
+            <div className={tw.max_w_md}>
+              <h1 className={tw.text_5xl.font_bold.text_secondary}>wentokens</h1>
+              <p className={tw.py_6}>The fastest airdrop tool in da wild west. Connect your wallet to get started.</p>
               <div className={tw.flex.flex_row.justify_center}>
                 <ConnectButton />
               </div>
@@ -42,7 +42,7 @@ export function App() {
       {isConnected && (
         // add margin top to the container
 
-        <div className="mt-10">
+        <div className={tw.mt_10}>
           <center>{airdropType === AirdropType.ERC20 ? <ERC20Provider /> : <ETHProvider />}</center>
         </div>
       )}

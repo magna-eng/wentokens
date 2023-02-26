@@ -108,10 +108,10 @@ function AirdropETH() {
       {!!toasts.length && <Toast messages={toasts} />}
 
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
-        <div className="mt-2">
+        <div className={tw.mt_2}>
           {isConnected ? (
             <div>
-              You have <span className="text-secondary">{balance?.formatted}</span> {balance?.symbol}.
+              You have <span className={tw.text_secondary}>{balance?.formatted}</span> {balance?.symbol}.
             </div>
           ) : (
             'Enter a valid token address to see your available balance.'
@@ -119,16 +119,16 @@ function AirdropETH() {
         </div>
 
         {isConnected && (
-          <div className="h-72">
+          <div className={tw.h_72}>
             <h2 className={tw.text_2xl}>Recipients and Amounts</h2>
             <h4>Enter one address and amount of {balance?.symbol} on each line. Supports any format.</h4>
             <textarea
               spellCheck={false}
-              className="input input-bordered input-secondary w-full my-4 min-h-full h-max"
+              className={tw.input.input_bordered.input_secondary.w_full.my_4.min_h_full.h_max}
               onChange={handleRecipientsChange}
               placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
             />
-            <button className="btn btn-secondary w-1/4" onClick={submitRecipients}>
+            <button className={tw.btn.btn_secondary.w_["1/4"]} onClick={submitRecipients}>
               Airdrop
             </button>
             {recipientsError && recipientsError.message}

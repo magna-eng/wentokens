@@ -1,3 +1,5 @@
+import { tw } from "typewind";
+
 export type ToastMessage = {
   text: string;
   className?: string;
@@ -9,7 +11,7 @@ interface IToastProps {
 
 export function Toast({ messages }: IToastProps) {
   return (
-    <div className="toast">
+    <div className={tw.toast}>
       {messages.map(({ text, className }) => (
         <div className={`alert ${className}`}>
           <div>

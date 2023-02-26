@@ -1,3 +1,5 @@
+import { tw } from "typewind";
+
 import { ConnectButton as BaseButton } from '@rainbow-me/rainbowkit';
 export default function ConnectButton() {
   return (
@@ -22,24 +24,24 @@ export default function ConnectButton() {
             {(() => {
               if (!connected) {
                 return (
-                  <button className="btn btn-secondary" onClick={openConnectModal}>
+                  <button className={tw.btn.btn_secondary} onClick={openConnectModal}>
                     Connect Wallet
                   </button>
                 );
               }
               if (chain.unsupported) {
                 return (
-                  <button className="btn btn-secondary" onClick={openChainModal}>
+                  <button className={tw.btn.btn_secondary} onClick={openChainModal}>
                     Wrong network
                   </button>
                 );
               }
               return (
-                <div className="btn-group">
-                  <button className="btn" onClick={openChainModal}>
+                <div className={tw.btn_group}>
+                  <button className={tw.btn} onClick={openChainModal}>
                     {chain.hasIcon && (
                       <div
-                        className="h-6"
+                        className={tw.h_6}
                         style={{
                           background: chain.iconBackground,
                           borderRadius: 999,
@@ -48,13 +50,13 @@ export default function ConnectButton() {
                         }}
                       >
                         {chain.iconUrl && (
-                          <img className="h-6" alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} />
+                          <img className={tw.h_6} alt={chain.name ?? 'Chain icon'} src={chain.iconUrl} />
                         )}
                       </div>
                     )}
                     {chain.name}
                   </button>
-                  <button className="btn btn-secondary" onClick={openAccountModal} type="button">
+                  <button className={tw.btn.btn_secondary} onClick={openAccountModal} type="button">
                     {account.displayName}
                     {account.displayBalance ? ` (${account.displayBalance})` : ''}
                   </button>
