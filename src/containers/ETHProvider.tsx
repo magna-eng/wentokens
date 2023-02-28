@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { BigNumber } from 'ethers';
 import { tw } from 'typewind';
 import { toast } from 'sonner'
@@ -11,7 +11,7 @@ import {
 import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
 import Button from '../ui/Button';
-import { CongratsModal, FormModal } from '../ui/Modal';
+import { CongratsModal, ConfirmModal, ModalSelector } from '../ui/Modal';
 import Switch from '../ui/Switch';
 import CsvUpload from '../ui/CsvUpload';
 
@@ -26,12 +26,13 @@ function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuc
 
   const { data, write } = useAirdropAirdropEth({
     ...config,
-    onSuccess: () => console.log('Airdrop transaction pending...'),
+    onSuccess: () => toast('Airdrop transaction pending...'),
   });
 
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
-    onSuccess: () => console.log('Airdrop transaction successful!'),
+    onSuccess: () => toast('Airdrop transaction successful!'),
+    onError: () => toast.error('Airdrop transaction failed!'),
   });
 
   return {
@@ -46,18 +47,28 @@ interface IAirdropEthProps {
   setSelected: (selected: AirdropTypeEnum) => void;
 }
 
+
 export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
-  const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
-  const [airdropPending, setAirdropPending] = useState<boolean>(false);
-  const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [recipients, setRecipients] = useState<[string, string][]>([]);
+  const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
 
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({
     address: address,
+    onError: (error) => toast.error(error.message),
   });
 
+  const parsedRecipients = useMemo(() => {
+    try {
+      return (recipients.length ? recipientsParser(balance?.decimals).parse(recipients) : []) as AirdropRecipient[];
+    } catch (e) {
+      toast.error((e as Error).message);
+      return [] as AirdropRecipient[];
+    }
+  }, [balance?.decimals, recipients]);
+
   const { write: airdropWrite } = useAirdrop(
-    recipients,
+    parsedRecipients,
     () => toast('Airdrop transaction pending...'),
     function onSuccess() {
       toast.success('Airdrop transaction successful!');
@@ -65,33 +76,21 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
     },
   );
 
-  useEffect(() => {
-    if (airdropPending) {
-      airdropWrite?.();
-    }
-  }, [airdropPending]);
-
-  const handleRecipientsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setRawRecipients(e.target.value);
-  };
-
-  const openModal = useCallback(() => {
-    setModalIsOpen(true);
-  })
-
-  // const submitRecipients = useCallback(() => {
-  //   try {
-  //     const recipients = recipientsParser(balance?.decimals).parse(rawRecipients) as AirdropRecipient[];
-  //     setRecipients(recipients);
-  //     setAirdropPending(true);
-  //   } catch (err) {
-  //     toast.error((err as Error).message);
-  //   }
-  // }, [balance?.decimals, rawRecipients]);
+  const toggleModal = useCallback(() => setOpenModal('confirm'), []);
 
   return (
     <div className={tw.container}>
-      <FormModal isOpen={modalIsOpen} setIsOpen={setModalIsOpen} />
+      <ConfirmModal
+        isOpen={openModal === 'confirm'}
+        setIsOpen={(val) => setOpenModal(val ? 'confirm' : false)}
+        recipients={parsedRecipients}
+        balanceData={balance}
+        onSubmit={() => airdropWrite?.()}
+      />
+      <CongratsModal
+        isOpen={openModal === 'congrats'}
+        setIsOpen={(val) => setOpenModal(val ? 'congrats' : false)}
+      />
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.w_["1/2"]}>
         <div className={tw.mt_2.text_neutral_400}>
           <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs}>
@@ -104,8 +103,11 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
             <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
             <h4 className={tw.text_neutral_400.mb_8}>Upload a <code>.csv</code> containing one address and amount of {balance?.symbol} in each row.</h4>
             <Switch selected={selected} setSelected={setSelected} />
-            <CsvUpload />
-            <Button onClick={openModal}>
+            <CsvUpload
+              onUpload={({ data }) => setRecipients(data)}
+              onReset={() => setRecipients([])}
+            />
+            <Button onClick={toggleModal} disabled={!parsedRecipients.length}>
               Airdrop <Icon icon="ri:arrow-right-up-line" />
             </Button>
           </div>
