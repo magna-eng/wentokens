@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { tw } from 'typewind';
 import { useAccount } from 'wagmi';
-import { Toaster, toast } from 'sonner'
+import { Toaster } from 'sonner'
 import ERC20Provider from './containers/ERC20Provider';
 import ETHProvider from './containers/ETHProvider';
 import { AirdropType, AirdropTypeEnum } from './types/airdrop';

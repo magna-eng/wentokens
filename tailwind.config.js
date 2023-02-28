@@ -25,7 +25,11 @@ module.exports = {
       body: ['Inter', 'sans-serif'],
       logo: ['"Neue Montreal"', 'Arimo', 'sans-serif'],
     },
-    extend: {},
+    extend: {
+      backgroundImage: {
+        congrats: "url('/congrats-modal-bg.svg')"
+      }
+    },
   },
   daisyui: {
     // themes: ["dark"]
