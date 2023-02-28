@@ -1,7 +1,11 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
+import { ethers, BigNumber } from 'ethers';
 import { tw } from 'typewind';
 import Checkmark from '../assets/congrats-checkmark.svg';
+import { AirdropRecipient } from '../types/airdrop';
+import { Icon } from '@iconify/react';
 import Button from './Button';
+import { FetchBalanceResult } from 'wagmi/dist/actions';
 
 interface IBaseModalProps {
   className?: string;
@@ -25,10 +29,15 @@ function BaseModal({ isOpen, setIsOpen, children, className }: IBaseModalProps) 
 
 type IModalProps = IBaseModalProps & {
   symbol?: string;
+  balanceData?: Partial<Pick<FetchBalanceResult, "decimals" | "value" | "symbol">>;
+  recipients: AirdropRecipient[];
   formattedBalance?: string;
+  onSubmit?: () => void;
 }
 
-export function CongratsModal (props: IBaseModalProps) {
+export type ModalSelector = 'confirm' | 'congrats';
+
+export function CongratsModal(props: IBaseModalProps) {
   return <BaseModal className={tw.bg_no_repeat.bg_top + " bg-congrats"} {...props}>
     <img className={tw.m_4} src={Checkmark} />
     <h1 className={tw.text_2xl}>Congratulations!</h1>
@@ -37,7 +46,9 @@ export function CongratsModal (props: IBaseModalProps) {
   </BaseModal>
 }
 
-export function FormModal({ symbol, ...props }: IModalProps) {
+export function ConfirmModal({ recipients, balanceData = {}, onSubmit, ...props }: IModalProps) {
+  const { decimals = 18, value: balance = BigNumber.from(0), symbol = '' } = balanceData;
+  const total = useMemo(() => recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)), [recipients]);
   return <BaseModal {...props} className={tw.w_['1/2'].max_w_5xl.p_0.font_light}>
     <div className={tw.pt_4.px_10.pb_2}>
       <h1 className={tw.text_2xl.font_medium}>Recipients and amounts</h1>
@@ -47,7 +58,7 @@ export function FormModal({ symbol, ...props }: IModalProps) {
 
 
     <div className={tw.p_4.px_10}>
-      <h3 className={tw.text_xl.text_left.mt_2.font_medium}>Confirm</h3>
+      <h3 className={tw.text_xl.text_left.my_2.font_medium}>Confirm</h3>
       <table className={tw.w_full.border_2.border_neutral_700.bg_transparent.rounded_lg.border_separate.border_spacing_0}>
         <thead>
           <tr>
@@ -56,33 +67,26 @@ export function FormModal({ symbol, ...props }: IModalProps) {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left}>1</th>
-            <td className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right}>Blue</td>
-          </tr>
-          <tr>
-            <th className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left}>1</th>
-            <td className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right}>Blue</td>
-          </tr>
-          <tr>
-            <th className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left}>1</th>
-            <td className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right}>Blue</td>
-          </tr>
+          {recipients.map((recipient, index) => <tr key={recipient.address + index}>
+            <td className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left.border_t_2.border_neutral_700}>{recipient.address}</td>
+            <td className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right.border_t_2.border_neutral_700}>{ethers.utils.formatUnits(recipient.amount, decimals)}</td>
+          </tr>)
+          }
         </tbody>
       </table>
 
       <div className={tw.flex.flex_col.gap_2.my_2.text_sm}>
         <span className={tw.flex.flex_row}>
           <p className={tw.text_neutral_400.mr_auto}>Total</p>
-          <p>0</p>
+          <p>{ethers.utils.formatUnits(total, decimals)} {symbol}</p>
         </span>
         <span className={tw.flex.flex_row}>
           <p className={tw.text_neutral_400.mr_auto}>Your balance</p>
-          <p>0</p>
+          <p>{ethers.utils.formatUnits(balance, decimals)} {symbol}</p>
         </span>
         <span className={tw.flex.flex_row}>
-          <p className={tw.text_neutral_400.mr_auto}>Total</p>
-          <p>0</p>
+          <p className={tw.text_neutral_400.mr_auto}>Remaining</p>
+          <p className={tw.text_critical}>{ethers.utils.formatUnits(balance.sub(total), decimals)} {symbol}</p>
         </span>
       </div>
     </div>
@@ -90,8 +94,8 @@ export function FormModal({ symbol, ...props }: IModalProps) {
     <hr className={tw.text_neutral_700} />
 
     <div className={tw.p_4.px_10}>
-      <Button>
-        Sign Transaction
+      <Button onClick={() => onSubmit?.()}>
+        Sign Transaction <Icon icon="ri:edit-fill" />
       </Button>
     </div>
 
