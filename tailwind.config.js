@@ -18,7 +18,7 @@ module.exports = {
         900: "#050505",
       },
       primary: "#F5A5FE",
-      critical: "#F5A5FE",
+      critical: "#FFB1B9",
     },
     fontFamily: {
       display: ['Inter Display', 'Inter', 'sans-serif'],

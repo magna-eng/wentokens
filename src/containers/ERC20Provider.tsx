@@ -139,7 +139,7 @@ interface IAirdropEthProps {
 
 export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const [tokenAddress, setTokenAddress] = useState<Address>('0x');
-  const [rawRecipients, setRawRecipients] = useState<string>('');
+  const [rawRecipients, setRawRecipients] = useState<string>('0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000');
   const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
   const [airdropPending, setAirdropPending] = useState<boolean>(false);
 
@@ -217,7 +217,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
           </div>
         </div>
 
-        {validToken || true && (
+        {validToken && (
           <div className={tw.min_h_fit}>
             <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
             <h4 className={tw.text_neutral_400.mb_8}>Enter one address and amount of {tokenName ?? 'your token'} on each line. Supports any format.</h4>
