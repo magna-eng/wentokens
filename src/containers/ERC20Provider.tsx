@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { BigNumber, ethers } from 'ethers';
 import { tw } from 'typewind';
 import {
@@ -12,7 +12,6 @@ import {
   useChainId,
 } from 'wagmi';
 import { toast } from 'sonner'
-import TextareaAutosize from 'react-textarea-autosize';
 import { Icon } from '@iconify/react';
 import {
   usePrepareAirdropAirdropErc20,
@@ -22,11 +21,11 @@ import {
 import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
 import Button from '../ui/Button';
+import { CongratsModal, ConfirmModal, ModalSelector } from '../ui/Modal';
 import Switch from '../ui/Switch';
+import CsvUpload from '../ui/CsvUpload';
 
 // TODO: Keyboard shortcuts
-// TODO: Better toasts
-// TODO: proper error handling
 
 // Fetches the relevant metadata of the token at the provided address
 function useTokenData(tokenAddress: Address) {
@@ -35,7 +34,7 @@ function useTokenData(tokenAddress: Address) {
   const { data: name } = useContractRead({
     abi: erc20ABI,
     address: tokenAddress,
-    functionName: 'name',
+    functionName: 'name'
   });
 
   const { data: symbol } = useContractRead({
@@ -139,9 +138,8 @@ interface IAirdropEthProps {
 
 export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const [tokenAddress, setTokenAddress] = useState<Address>('0x');
-  const [rawRecipients, setRawRecipients] = useState<string>('0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000');
-  const [recipients, setRecipients] = useState<AirdropRecipient[]>([]);
-  const [airdropPending, setAirdropPending] = useState<boolean>(false);
+  const [recipients, setRecipients] = useState<[string, string][]>([]);
+  const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
 
   const {
     name: tokenName,
@@ -149,21 +147,35 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     balance: tokenBalance,
     decimals: tokenDecimals,
   } = useTokenData(tokenAddress);
+  const balanceData = {
+    name: tokenName,
+    symbol: tokenSymbol,
+    value: tokenBalance,
+    decimals: tokenDecimals,
+  };
   const formattedTokenBalance = tokenBalance ? ethers.utils.formatUnits(tokenBalance, tokenDecimals) : '0';
 
-  const { isLoading: airdropIsLoading, write: airdropWrite } = useApproveAirdrop(
+  const parsedRecipients = useMemo(() => {
+    try {
+      return (recipients.length ? recipientsParser(tokenDecimals).parse(recipients) : []) as AirdropRecipient[];
+    } catch (e) {
+      toast.error((e as Error).message);
+      return [] as AirdropRecipient[];
+    }
+  }, [tokenDecimals, recipients]);
+
+  const { write: airdropWrite } = useApproveAirdrop(
     tokenAddress,
-    recipients,
+    parsedRecipients,
     () => toast('Airdrop transaction pending...'),
     function onSuccess() {
-      setAirdropPending(false);
       toast.success('Airdrop transaction successful!');
     },
   );
 
-  const { isLoading: allowanceIsLoading, write: approveWrite } = useApproveAllowance(
+  const { write: approveWrite } = useApproveAllowance(
     tokenAddress,
-    recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
+    parsedRecipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
     () => toast('Approval transaction pending...'),
     function onSuccess() {
       toast.success('Approval transaction successful!');
@@ -171,39 +183,31 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     },
   );
 
-  useEffect(() => {
-    if (airdropPending) {
-      approveWrite?.();
-    }
-  }, [airdropPending]);
-
   const handleTokenAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawInput = e.target.value;
     setTokenAddress(rawInput as Address);
   };
 
-  const handleRecipientsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setRawRecipients(e.target.value);
-  };
-
-  const submitRecipients = useCallback(() => {
-    try {
-      const recipients = recipientsParser(tokenDecimals).parse(rawRecipients) as AirdropRecipient[];
-      setRecipients(recipients);
-      setAirdropPending(true);
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
-  }, [tokenDecimals, rawRecipients]);
+  const toggleModal = useCallback(() => setOpenModal('confirm'), []);
 
   const validToken = tokenName && tokenSymbol;
 
   return (
     <div className={tw.container}>
-
+      <ConfirmModal
+        isOpen={openModal === 'confirm'}
+        setIsOpen={(val) => setOpenModal(val ? 'confirm' : false)}
+        recipients={parsedRecipients}
+        balanceData={balanceData}
+        onSubmit={() => airdropWrite?.()}
+      />
+      <CongratsModal
+        isOpen={openModal === 'congrats'}
+        setIsOpen={(val) => setOpenModal(val ? 'congrats' : false)}
+      />
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
         <h2 className={tw.text_3xl.text_base_100.mb_2}>Token Address</h2>
-        {!validToken ? <Switch selected={selected} setSelected={setSelected} /> : null }
+        {!validToken ? <Switch selected={selected} setSelected={setSelected} /> : null}
         <input
           className={tw.input.input_bordered.text_base_100.bg_transparent.border_2.border_neutral_700}
           spellCheck={false}
@@ -220,18 +224,15 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
         {validToken && (
           <div className={tw.min_h_fit}>
             <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
-            <h4 className={tw.text_neutral_400.mb_8}>Enter one address and amount of {tokenName ?? 'your token'} on each line. Supports any format.</h4>
+            <h4 className={tw.text_neutral_400.mb_8}>Upload a <code>.csv</code> containing one address and amount of {tokenSymbol} in each row.</h4>
             <Switch selected={selected} setSelected={setSelected} />
-            <TextareaAutosize
-              spellCheck={false}
-              className={tw.input.input_bordered.input_secondary.text_base_100.bg_transparent.border_2.border_neutral_700.py_4.px_6.w_full.my_4.min_h_["30vh"].h_max}
-              onChange={handleRecipientsChange}
-              defaultValue={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
-              placeholder={`0x0000000000000000000000000000000000000000 1000000\n0x0000000000000000000000000000000000000000 1000000`}
+            <CsvUpload
+              onUpload={({ data }) => setRecipients(data)}
+              onReset={() => setRecipients([])}
             />
-            <Button onClick={submitRecipients}>
+            <Button onClick={toggleModal} disabled={!parsedRecipients.length}>
               Airdrop <Icon icon="ri:arrow-right-up-line" />
-            </Button> 
+            </Button>
           </div>
         )}
       </div>
