@@ -8,16 +8,22 @@ import {
 
 interface ICSVUploadProps<T = any> {
   onUpload: (data: ParseResult<T>) => void;
+  onReset: () => void;
 }
 
-export default function CSVUpload<T = any>({ onUpload }: ICSVUploadProps<T>) {
+export default function CSVUpload<T = any>({ onUpload, onReset }: ICSVUploadProps<T>) {
   const { CSVReader } = useCSVReader();
-
   return (
     <CSVReader
       header={false}
       worker
-      onUploadAccepted={onUpload}
+      onUploadAccepted={(data: ParseResult<T>) => {
+        if (data.errors.length > 0) {
+          toast.error(data.errors[0].message);
+        } else {
+          onUpload(data);
+        }
+      }}
       onUploadRejected={() => toast.error('Upload rejected - check to make sure your CSV is properly formatted')}
       onDragOver={(event: DragEvent) => event.preventDefault()}
       onDragLeave={(event: DragEvent) => event.preventDefault()}
@@ -28,6 +34,7 @@ export default function CSVUpload<T = any>({ onUpload }: ICSVUploadProps<T>) {
         ProgressBar,
         getRemoveFileProps,
       }: any) => {
+        const { onClick: removeOnClick, ...removeFileProps } = getRemoveFileProps();
         return <>
           <div
             className={tw
@@ -66,7 +73,11 @@ export default function CSVUpload<T = any>({ onUpload }: ICSVUploadProps<T>) {
               <span className={tw.text_left.text_base_100}>{acceptedFile.name}</span>
               <div
                 className={tw.text_right.ml_auto.cursor_pointer}
-                {...getRemoveFileProps()}
+                {...removeFileProps}
+                onClick={(event) => {
+                  removeOnClick(event);
+                  onReset();
+                }}
                 onMouseOver={(event: Event) => event.preventDefault()}
                 onMouseOut={(event: Event) => event.preventDefault()}
               >
