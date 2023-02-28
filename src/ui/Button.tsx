@@ -8,7 +8,7 @@ type IButtonProps = {
 } & ComponentProps<"button">
 
 export default function Button({ children, className, isOutline, ...props }: IButtonProps) {
-  let baseButtonClasses: string = tw.btn.btn_primary.text_primary.backdrop_blur.w_full
+  let baseButtonClasses: string = tw.btn.btn_primary.text_primary.backdrop_blur.w_full.capitalize
   if (isOutline) baseButtonClasses += ` ${tw.btn_outline}`
   return <button
     {...props} 

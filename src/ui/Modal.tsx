@@ -95,7 +95,7 @@ export function ConfirmModal({ recipients, balanceData = {}, onSubmit, ...props 
 
     <div className={tw.p_4.px_10}>
       <Button onClick={() => onSubmit?.()}>
-        Sign Transaction <Icon icon="ri:edit-fill" />
+        <p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" />
       </Button>
     </div>
 
