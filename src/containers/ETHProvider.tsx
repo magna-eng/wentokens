@@ -45,41 +45,62 @@ interface IAirdropEthProps {
 export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
   const [recipients, setRecipients] = useState<[string, string][]>([]);
   const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
+  const [loadingMessage, setLoadingMessage] = useState<string | false>(false);
+  const [errorMessage, setErrorMessage] = useState<string | false>(false);
+
+  const displayMessage = (message: string, type?: 'success' | 'error') => {
+    type ? toast[type](message) : toast(message);
+    if (type === 'error') {
+      setLoadingMessage(false);
+      setErrorMessage(message);
+    } else if (type !== 'success') {
+      setLoadingMessage(message);
+      setErrorMessage(false);
+    }
+  }
+
+  const displayModal = () => {
+    setOpenModal('confirm');
+    setLoadingMessage(false);
+    setErrorMessage(false);
+  }
 
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({
     address: address,
-    onError: error => toast.error(error.message),
+    onError: error => displayMessage(error.message, 'error'),
   });
 
   const parsedRecipients = useMemo(() => {
     try {
       return (recipients.length ? recipientsParser(balance?.decimals).parse(recipients) : []) as AirdropRecipient[];
     } catch (e) {
-      toast.error((e as Error).message);
+      displayMessage((e as Error).message, 'error');
       return [] as AirdropRecipient[];
     }
   }, [balance?.decimals, recipients]);
 
   const { write: airdropWrite } = useAirdrop(
     parsedRecipients,
-    () => toast('Airdrop transaction pending...'),
+    () => displayMessage('Airdrop transaction pending...'),
     function onSuccess() {
-      toast.success('Airdrop transaction successful!');
+      displayMessage('Airdrop transaction successful!', 'success');
       setOpenModal('congrats');
     },
   );
 
   return (
     <div className={tw.container}>
-      <ConfirmModal
+      {openModal === 'confirm' && <ConfirmModal
         isOpen={openModal === 'confirm'}
         setIsOpen={val => setOpenModal(val ? 'confirm' : false)}
         recipients={parsedRecipients}
         balanceData={balance}
+        loadingMessage={loadingMessage ? loadingMessage : undefined}
+        errorMessage={errorMessage ? errorMessage : undefined}
         onSubmit={() => airdropWrite?.()}
-      />
-      <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />
+      />}
+      {openModal === 'congrats' && <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />}
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.w_['1/2']}>
         <div className={tw.mt_2.text_neutral_400}>
           <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs}>
@@ -97,7 +118,7 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
             <CsvUpload
               onUpload={({ data }) => {
                 setRecipients(data as [string, string][]);
-                setOpenModal('confirm');
+                displayModal();
               }}
               onReset={() => setRecipients([])}
             />

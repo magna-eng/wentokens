@@ -13,9 +13,9 @@ export default function Button({ children, className, isOutline, ...props }: IBu
   return (
     <button
       {...props}
-      className={`${baseButtonClasses} ${
+      className={`${baseButtonClasses} bg-primary/[.12] hover:bg-primary/[.24] active:bg-primary/[.32] ${
         className || ''
-      } bg-primary/[.12] hover:bg-primary/[.24] active:bg-primary/[.32]`}
+      }`}
     >
       {children}
     </button>

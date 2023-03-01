@@ -6,6 +6,7 @@ import { FetchBalanceResult } from 'wagmi/dist/actions';
 import Checkmark from '../assets/congrats-checkmark.svg';
 import { AirdropRecipient } from '../types/airdrop';
 import Button from './Button';
+import cls from './classesUtil'
 
 interface IBaseModalProps {
   className?: string;
@@ -42,14 +43,6 @@ function BaseModal({ isOpen, setIsOpen, children, className }: IBaseModalProps) 
   );
 }
 
-type IModalProps = IBaseModalProps & {
-  symbol?: string;
-  balanceData?: Partial<Pick<FetchBalanceResult, 'decimals' | 'value' | 'symbol'>>;
-  recipients: AirdropRecipient[];
-  formattedBalance?: string;
-  onSubmit?: () => void;
-};
-
 export type ModalSelector = 'confirm' | 'congrats';
 
 export function CongratsModal(props: IBaseModalProps) {
@@ -63,9 +56,20 @@ export function CongratsModal(props: IBaseModalProps) {
   );
 }
 
-export function ConfirmModal({ recipients, balanceData = {}, onSubmit, ...props }: IModalProps) {
+type IModalProps = IBaseModalProps & {
+  symbol?: string;
+  balanceData?: Partial<Pick<FetchBalanceResult, 'decimals' | 'value' | 'symbol'>>;
+  recipients?: AirdropRecipient[];
+  formattedBalance?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+  onSubmit?: () => void;
+};
+
+export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage, errorMessage, onSubmit, ...props }: IModalProps) {
   const { decimals = 18, value: balance = BigNumber.from(0), symbol = '' } = balanceData;
   const total = useMemo(() => recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)), [recipients]);
+  const buttonMessage = errorMessage ?? loadingMessage;
   return (
     <BaseModal {...props} className={tw.w_['1/2'].max_w_5xl.p_0.font_light}>
       <div className={tw.pt_4.px_10.pb_2}>
@@ -130,8 +134,11 @@ export function ConfirmModal({ recipients, balanceData = {}, onSubmit, ...props 
       <hr className={tw.text_neutral_700} />
 
       <div className={tw.p_4.px_10}>
-        <Button onClick={() => onSubmit?.()}>
-          <p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" />
+        <Button
+          onClick={() => onSubmit?.()}
+          className={cls('', loadingMessage ? tw.loading: false)}
+        >
+          {buttonMessage ? buttonMessage : <><p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" /></>}
         </Button>
       </div>
     </BaseModal>

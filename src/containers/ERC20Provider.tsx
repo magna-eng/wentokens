@@ -138,6 +138,25 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const [tokenAddress, setTokenAddress] = useState<Address>('0x');
   const [recipients, setRecipients] = useState<[string, string][]>([]);
   const [openModal, setOpenModal] = useState<ModalSelector | false>(false);
+  const [loadingMessage, setLoadingMessage] = useState<string | false>(false);
+  const [errorMessage, setErrorMessage] = useState<string | false>(false);
+
+  const displayMessage = (message: string, type?: 'success' | 'error') => {
+    type ? toast[type](message) : toast(message);
+    if (type === 'error') {
+      setLoadingMessage(false);
+      setErrorMessage(message);
+    } else if (type !== 'success') {
+      setLoadingMessage(message);
+      setErrorMessage(false);
+    }
+  }
+
+  const displayModal = () => {
+    setOpenModal('confirm');
+    setLoadingMessage(false);
+    setErrorMessage(false);
+  }
 
   const {
     name: tokenName,
@@ -157,7 +176,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     try {
       return (recipients.length ? recipientsParser(tokenDecimals).parse(recipients) : []) as AirdropRecipient[];
     } catch (e) {
-      toast.error((e as Error).message);
+      displayMessage((e as Error).message, 'error');
       return [] as AirdropRecipient[];
     }
   }, [tokenDecimals, recipients]);
@@ -165,9 +184,9 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const { write: airdropWrite } = useApproveAirdrop(
     tokenAddress,
     parsedRecipients,
-    () => toast('Airdrop transaction pending...'),
+    () => displayMessage('Airdrop transaction pending...'),
     function onSuccess() {
-      toast.success('Airdrop transaction successful!');
+      displayMessage('Airdrop transaction successful!', 'success');
       setOpenModal('congrats');
     },
   );
@@ -175,9 +194,9 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const { write: approveWrite } = useApproveAllowance(
     tokenAddress,
     parsedRecipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
-    () => toast('Approval transaction pending...'),
+    () => displayMessage('Approval transaction pending...'),
     function onSuccess() {
-      toast.success('Approval transaction successful!');
+      displayMessage('Approval transaction successful!', 'success');
       airdropWrite?.();
     },
   );
@@ -191,14 +210,16 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
 
   return (
     <div className={tw.container}>
-      <ConfirmModal
+      {openModal === 'confirm' && <ConfirmModal
         isOpen={openModal === 'confirm'}
         setIsOpen={val => setOpenModal(val ? 'confirm' : false)}
         recipients={parsedRecipients}
         balanceData={balanceData}
+        loadingMessage={loadingMessage ? loadingMessage : undefined}
+        errorMessage={errorMessage ? errorMessage : undefined}
         onSubmit={() => approveWrite?.()}
-      />
-      <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />
+      />}
+      {openModal === 'congrats' && <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />}
       <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + ' w-1/2'}>
         <h2 className={tw.text_3xl.text_base_100.mb_2}>Token Address</h2>
         {!validToken ? <Switch selected={selected} setSelected={setSelected} /> : null}
@@ -229,7 +250,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
             <CsvUpload
               onUpload={({ data }) => {
                 setRecipients(data as [string, string][]);
-                setOpenModal('confirm');
+                displayModal();
               }}
               onReset={() => setRecipients([])}
             />
