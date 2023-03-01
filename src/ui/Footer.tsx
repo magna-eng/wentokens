@@ -8,9 +8,13 @@ export default function Footer() {
       <div>
         <p className={tw.flex.justify_center.items_end.gap_1}>
           Powered by{' '}
-          <span className={tw.flex.justify_center.items_start.gap_1}>
+          <a 
+            href="https://www.magna.so/"
+            target="_blank"
+            className={tw.flex.justify_center.items_start.gap_1}
+          >
             <img src={LogoMark} /> <img src={WordMark} />
-          </span>
+          </a>
         </p>
         <p>{new Date().getFullYear()} © Magna Digital, Inc. - All rights reserved.</p>
       </div>
