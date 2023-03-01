@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import type { ParseResult } from 'papaparse';
 import { useCSVReader } from 'react-papaparse';
@@ -10,19 +11,27 @@ interface ICSVUploadProps<T = string[]> {
 }
 
 export default function CSVUpload<T = string[]>({ onUpload, onReset }: ICSVUploadProps<T>) {
+  const [fileCompleted, setFileCompleted] = useState<'success' | 'error' | false>(false);
   const { CSVReader } = useCSVReader();
   return (
     <CSVReader
       header={false}
-      worker
+      config={{
+        worker: true,
+        skipEmptyLines: true
+      }}
       onUploadAccepted={(data: ParseResult<T>) => {
+        setFileCompleted('success');
         if (data.errors.length > 0) {
           toast.error(data.errors[0].message);
         } else {
           onUpload(data);
         }
       }}
-      onUploadRejected={() => toast.error('Upload rejected - check to make sure your CSV is properly formatted')}
+      onUploadRejected={() => {
+        setFileCompleted('error');
+        toast.error('Upload rejected - check to make sure your CSV is properly formatted')
+      }}
       onDragOver={(event: DragEvent) => event.preventDefault()}
       onDragLeave={(event: DragEvent) => event.preventDefault()}
     >
@@ -56,13 +65,19 @@ export default function CSVUpload<T = string[]>({ onUpload, onReset }: ICSVUploa
                 }
               >
                 <div className={tw.flex.flex_row.w_full.items_center.justify_center}>
-                  <span className={tw.text_left.text_base_100}>{acceptedFile.name}</span>
+                  <span className={tw.text_left.text_base_100.mr_auto}>{acceptedFile.name}</span>
+                  <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs.mr_2}>
+                    {!fileCompleted && 'Loading...'}
+                    {fileCompleted === 'success' && 'Uploaded'}
+                    {fileCompleted === 'error' && 'Error'}
+                  </div>
                   <div
-                    className={tw.text_right.ml_auto.cursor_pointer}
+                    className={tw.text_right.cursor_pointer}
                     {...removeFileProps}
                     onClick={event => {
                       removeOnClick(event);
                       onReset();
+                      setFileCompleted(false);
                     }}
                     onMouseOver={(event: Event) => event.preventDefault()}
                     onMouseOut={(event: Event) => event.preventDefault()}
