@@ -32,7 +32,7 @@ function useTokenData(tokenAddress: Address) {
   const { data: name } = useContractRead({
     abi: erc20ABI,
     address: tokenAddress,
-    functionName: 'name'
+    functionName: 'name',
   });
 
   const { data: symbol } = useContractRead({
@@ -168,6 +168,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     () => toast('Airdrop transaction pending...'),
     function onSuccess() {
       toast.success('Airdrop transaction successful!');
+      setOpenModal('congrats');
     },
   );
 
@@ -185,8 +186,6 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     const rawInput = e.target.value;
     setTokenAddress(rawInput as Address);
   };
-
-  const toggleModal = useCallback(() => setOpenModal('confirm'), []);
 
   const validToken = tokenName && tokenSymbol;
 
@@ -228,12 +227,12 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
               Upload a <code>.csv</code> containing one address and amount of {tokenSymbol} in each row.
             </h4>
             <CsvUpload
-              onUpload={({ data }) => setRecipients(data)}
+              onUpload={({ data }) => {
+                setRecipients(data as [string, string][]);
+                setOpenModal('confirm');
+              }}
               onReset={() => setRecipients([])}
             />
-            <Button onClick={toggleModal} disabled={!parsedRecipients.length}>
-              Airdrop <Icon icon="ri:arrow-right-up-line" />
-            </Button>
           </div>
         )}
       </div>

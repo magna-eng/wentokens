@@ -21,12 +21,12 @@ function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuc
 
   const { data, write } = useAirdropAirdropEth({
     ...config,
-    onSuccess: () => toast('Airdrop transaction pending...'),
+    onSuccess: onPending,
   });
 
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
-    onSuccess: () => toast('Airdrop transaction successful!'),
+    onSuccess,
     onError: () => toast.error('Airdrop transaction failed!'),
   });
 
@@ -41,7 +41,6 @@ interface IAirdropEthProps {
   selected: AirdropTypeEnum;
   setSelected: (selected: AirdropTypeEnum) => void;
 }
-
 
 export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) {
   const [recipients, setRecipients] = useState<[string, string][]>([]);
@@ -67,11 +66,9 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
     () => toast('Airdrop transaction pending...'),
     function onSuccess() {
       toast.success('Airdrop transaction successful!');
-      airdropWrite?.();
+      setOpenModal('congrats');
     },
   );
-
-  const toggleModal = useCallback(() => setOpenModal('confirm'), []);
 
   return (
     <div className={tw.container}>
@@ -98,12 +95,12 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
             </h4>
             <Switch selected={selected} setSelected={setSelected} />
             <CsvUpload
-              onUpload={({ data }) => setRecipients(data)}
+              onUpload={({ data }) => {
+                setRecipients(data as [string, string][]);
+                setOpenModal('confirm');
+              }}
               onReset={() => setRecipients([])}
             />
-            <Button onClick={toggleModal} disabled={!parsedRecipients.length}>
-              Airdrop <Icon icon="ri:arrow-right-up-line" />
-            </Button>
           </div>
         )}
       </div>

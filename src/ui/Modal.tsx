@@ -134,8 +134,6 @@ export function ConfirmModal({ recipients, balanceData = {}, onSubmit, ...props 
           <p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" />
         </Button>
       </div>
-
-      <div></div>
     </BaseModal>
   );
 }
