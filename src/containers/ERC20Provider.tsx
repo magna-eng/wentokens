@@ -196,7 +196,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     parsedRecipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)),
     () => displayMessage('Approval transaction pending...'),
     function onSuccess() {
-      displayMessage('Approval transaction successful!', 'success');
+      displayMessage('Approval transaction submitted!', 'success');
       airdropWrite?.();
     },
   );
