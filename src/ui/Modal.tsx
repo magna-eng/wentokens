@@ -66,12 +66,12 @@ type IModalProps = IBaseModalProps & {
   onSubmit?: () => void;
 };
 
-export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage, errorMessage, onSubmit, ...props }: IModalProps) {
+export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage, errorMessage, onSubmit, isOpen, ...props }: IModalProps) {
   const { decimals = 18, value: balance = BigNumber.from(0), symbol = '' } = balanceData;
   const total = useMemo(() => recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)), [recipients]);
   const buttonMessage = errorMessage ?? loadingMessage;
   return (
-    <BaseModal {...props} className={tw.w_['1/2'].max_w_5xl.p_0.font_light}>
+    <BaseModal {...props} isOpen={!!loadingMessage || isOpen} className={tw.w_['1/2'].max_w_5xl.p_0.font_light}>
       <div className={tw.pt_4.px_10.pb_2}>
         <h1 className={tw.text_2xl.font_medium}>Recipients and amounts</h1>
         <h4 className={tw.text_sm.text_neutral_300.mt_2}>
@@ -135,7 +135,7 @@ export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage
 
       <div className={tw.p_4.px_10}>
         <Button
-          onClick={() => onSubmit?.()}
+          onClick={() => !loadingMessage && onSubmit?.()}
           className={cls('', loadingMessage ? tw.loading: false)}
         >
           {buttonMessage ? buttonMessage : <><p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" /></>}
