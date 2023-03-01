@@ -10,15 +10,15 @@ export const recipientsParser = (decimals = 18) =>
       if (!firstAddress || !utils.isAddress(firstAddress)) {
         arr = arr.slice(1);
       }
-      return (arr).map(([address, amount]) => ({
+      return arr.map(([address, amount]) => ({
         address: address as Address,
         amount: utils.parseUnits(amount, decimals),
-      }))
-  },
-  z.array(
-    z.object({
-      address: z.coerce.string().startsWith('0x').length(42),
-      amount: z.instanceof(BigNumber).refine(b => b.gte(BigNumber.from(0))),
-    }),
+      }));
+    },
+    z.array(
+      z.object({
+        address: z.coerce.string().startsWith('0x').length(42),
+        amount: z.instanceof(BigNumber).refine(b => b.gte(BigNumber.from(0))),
+      }),
     ),
   );

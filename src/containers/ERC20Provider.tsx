@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { BigNumber, ethers } from 'ethers';
+import { toast } from 'sonner';
 import { tw } from 'typewind';
 import {
   erc20ABI,
@@ -11,8 +12,6 @@ import {
   Address,
   useChainId,
 } from 'wagmi';
-import { toast } from 'sonner'
-import { Icon } from '@iconify/react';
 import {
   usePrepareAirdropAirdropErc20,
   useAirdropAirdropErc20,
@@ -20,10 +19,9 @@ import {
 } from '../generated';
 import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
-import Button from '../ui/Button';
+import CsvUpload from '../ui/CsvUpload';
 import { CongratsModal, ConfirmModal, ModalSelector } from '../ui/Modal';
 import Switch from '../ui/Switch';
-import CsvUpload from '../ui/CsvUpload';
 
 // TODO: Keyboard shortcuts
 
@@ -196,16 +194,13 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     <div className={tw.container}>
       <ConfirmModal
         isOpen={openModal === 'confirm'}
-        setIsOpen={(val) => setOpenModal(val ? 'confirm' : false)}
+        setIsOpen={val => setOpenModal(val ? 'confirm' : false)}
         recipients={parsedRecipients}
         balanceData={balanceData}
-        onSubmit={() => airdropWrite?.()}
+        onSubmit={() => approveWrite?.()}
       />
-      <CongratsModal
-        isOpen={openModal === 'congrats'}
-        setIsOpen={(val) => setOpenModal(val ? 'congrats' : false)}
-      />
-      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + " w-1/2"}>
+      <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />
+      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + ' w-1/2'}>
         <h2 className={tw.text_3xl.text_base_100.mb_2}>Token Address</h2>
         {!validToken ? <Switch selected={selected} setSelected={setSelected} /> : null}
         <input
@@ -216,16 +211,22 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
         />
         <div>
           <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs.mt_2}>
-            {validToken ? <>You have {formattedTokenBalance} {tokenSymbol}</>
-              : `Enter a valid token address to see your available balance.`}
+            {validToken ? (
+              <>
+                You have {formattedTokenBalance} {tokenSymbol}
+              </>
+            ) : (
+              `Enter a valid token address to see your available balance.`
+            )}
           </div>
         </div>
 
         {validToken && (
           <div className={tw.min_h_fit}>
             <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
-            <h4 className={tw.text_neutral_400.mb_8}>Upload a <code>.csv</code> containing one address and amount of {tokenSymbol} in each row.</h4>
-            <Switch selected={selected} setSelected={setSelected} />
+            <h4 className={tw.text_neutral_400.mb_8}>
+              Upload a <code>.csv</code> containing one address and amount of {tokenSymbol} in each row.
+            </h4>
             <CsvUpload
               onUpload={({ data }) => setRecipients(data)}
               onReset={() => setRecipients([])}

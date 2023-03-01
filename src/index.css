@@ -6,16 +6,16 @@
 @tailwind utilities;
 
 html {
-    overflow: hidden;
-    height: 100%;
+  overflow: hidden;
+  height: 100%;
 }
 
 body {
-    height: 100%;
-    overflow: auto;
-    background-color: #050505;
-    background-image: url('./bg-grid.svg');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: bottom;
+  height: 100%;
+  overflow: auto;
+  background-color: #050505;
+  background-image: url('./bg-grid.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom;
 }

@@ -1,4 +1,4 @@
-import { tw } from "typewind";
+import { tw } from 'typewind';
 import { AirdropType, AirdropTypeEnum } from '../types/airdrop';
 import cls from './classesUtil';
 

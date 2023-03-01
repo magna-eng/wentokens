@@ -1,19 +1,14 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { BigNumber } from 'ethers';
+import { toast } from 'sonner';
 import { tw } from 'typewind';
-import { toast } from 'sonner'
 import { useWaitForTransaction, useBalance, useAccount } from 'wagmi';
-import { Icon } from '@iconify/react';
-import {
-  usePrepareAirdropAirdropEth,
-  useAirdropAirdropEth,
-} from '../generated';
+import { usePrepareAirdropAirdropEth, useAirdropAirdropEth } from '../generated';
 import { AirdropTypeEnum, AirdropRecipient } from '../types/airdrop';
 import { recipientsParser } from '../types/parsers';
-import Button from '../ui/Button';
+import CsvUpload from '../ui/CsvUpload';
 import { CongratsModal, ConfirmModal, ModalSelector } from '../ui/Modal';
 import Switch from '../ui/Switch';
-import CsvUpload from '../ui/CsvUpload';
 
 // Prepares the airdrop
 function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuccess: () => void) {
@@ -55,7 +50,7 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({
     address: address,
-    onError: (error) => toast.error(error.message),
+    onError: error => toast.error(error.message),
   });
 
   const parsedRecipients = useMemo(() => {
@@ -82,16 +77,13 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
     <div className={tw.container}>
       <ConfirmModal
         isOpen={openModal === 'confirm'}
-        setIsOpen={(val) => setOpenModal(val ? 'confirm' : false)}
+        setIsOpen={val => setOpenModal(val ? 'confirm' : false)}
         recipients={parsedRecipients}
         balanceData={balance}
         onSubmit={() => airdropWrite?.()}
       />
-      <CongratsModal
-        isOpen={openModal === 'congrats'}
-        setIsOpen={(val) => setOpenModal(val ? 'congrats' : false)}
-      />
-      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.w_["1/2"]}>
+      <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />
+      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.w_['1/2']}>
         <div className={tw.mt_2.text_neutral_400}>
           <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs}>
             You have {balance?.formatted} {balance?.symbol}
@@ -101,7 +93,9 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
         {isConnected && (
           <div className={tw.min_h_fit}>
             <h2 className={tw.text_4xl.text_base_100.mb_2}>Recipients and Amounts</h2>
-            <h4 className={tw.text_neutral_400.mb_8}>Upload a <code>.csv</code> containing one address and amount of {balance?.symbol} in each row.</h4>
+            <h4 className={tw.text_neutral_400.mb_8}>
+              Upload a <code>.csv</code> containing one address and amount of {balance?.symbol} in each row.
+            </h4>
             <Switch selected={selected} setSelected={setSelected} />
             <CsvUpload
               onUpload={({ data }) => setRecipients(data)}

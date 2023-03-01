@@ -11,14 +11,14 @@ module.exports = {
       transparent: 'transparent',
       current: 'currentColor',
       neutral: {
-        0: "#FFFFFF",
-        400: "#898896",
-        700: "#27262C",
-        800: "#131316",
-        900: "#050505",
+        0: '#FFFFFF',
+        400: '#898896',
+        700: '#27262C',
+        800: '#131316',
+        900: '#050505',
       },
-      primary: "#F5A5FE",
-      critical: "#FFB1B9",
+      primary: '#F5A5FE',
+      critical: '#FFB1B9',
     },
     fontFamily: {
       display: ['Inter Display', 'Inter', 'sans-serif'],
@@ -27,8 +27,8 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        congrats: "url('/congrats-modal-bg.svg')"
-      }
+        congrats: "url('/congrats-modal-bg.svg')",
+      },
     },
   },
   daisyui: {
@@ -36,12 +36,12 @@ module.exports = {
     themes: [
       {
         wentokens: {
-          primary: "#F5A5FE",
-          secondary: "#050505",
-          accent: "#F5A5FE",
-          neutral: "#666472",
-          "neutral-900": "#050505",
-          "base-100": "#ffffff",
+          'primary': '#F5A5FE',
+          'secondary': '#050505',
+          'accent': '#F5A5FE',
+          'neutral': '#666472',
+          'neutral-900': '#050505',
+          'base-100': '#ffffff',
         },
       },
     ],
