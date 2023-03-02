@@ -50,7 +50,7 @@ export function CongratsModal(props: IBaseModalProps) {
     <BaseModal className={tw.bg_no_repeat.bg_top + ' bg-congrats'} {...props}>
       <img className={tw.m_4} src={Checkmark} />
       <h1 className={tw.text_2xl}>Congratulations!</h1>
-      <p className={tw.text_sm.text_neutral_300.mt_2.mb_10}>You have been rugged and all of your tokens are gone!</p>
+      <p className={tw.text_sm.text_neutral_300.mt_2.mb_10}>Your tokens have been sent!</p>
       <button className={tw.btn.btn_secondary.w_full.border_2.border_neutral_700.bg_transparent}>Cancel</button>
     </BaseModal>
   );
