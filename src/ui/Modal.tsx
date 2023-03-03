@@ -51,7 +51,10 @@ export function CongratsModal(props: IBaseModalProps) {
       <img className={tw.m_4} src={Checkmark} />
       <h1 className={tw.text_2xl}>Congratulations!</h1>
       <p className={tw.text_sm.text_neutral_300.mt_2.mb_10}>Your tokens have been sent!</p>
-      <button className={tw.btn.btn_secondary.w_full.border_2.border_neutral_700.bg_transparent}>Cancel</button>
+      <button
+        className={tw.btn.btn_secondary.w_full.border_2.border_neutral_700.bg_transparent}
+        onClick={() => props.setIsOpen?.(false)}
+      >Confirm</button>
     </BaseModal>
   );
 }
@@ -82,16 +85,20 @@ export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage
 
       <div className={tw.p_4.px_10}>
         <h3 className={tw.text_xl.text_left.my_2.font_medium}>Confirm</h3>
-        <table
-          className={tw.w_full.border_2.border_neutral_700.bg_transparent.rounded_lg.border_separate.border_spacing_0}
-        >
+        <div
+          className={tw.w_full.border_2.border_neutral_700.bg_transparent.rounded_lg.border_separate.border_spacing_0.overflow_auto}
+          style={{
+            height: 'calc(50vh - 5em)' ,
+          }}
+       >
+          <table className={tw.w_full}>
           <thead>
-            <tr>
-              <th className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left}>Recipient</th>
-              <th className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right}>Amount</th>
+            <tr className={tw.border_b_2.border_neutral_700}>
+              <th className={tw.bg_neutral_900.capitalize.text_neutral_400.p_3.sticky.top_0.text_left}>Recipient</th>
+              <th className={tw.bg_neutral_900.capitalize.text_neutral_400.p_3.sticky.top_0.text_right}>Amount</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={tw.overflow_auto}>
             {recipients.map((recipient, index) => (
               <tr key={recipient.address + index}>
                 <td
@@ -107,7 +114,8 @@ export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
 
         <div className={tw.flex.flex_col.gap_2.my_2.text_sm}>
           <span className={tw.flex.flex_row}>
