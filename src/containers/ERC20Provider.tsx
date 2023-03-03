@@ -65,7 +65,7 @@ function useTokenData(tokenAddress: Address) {
 }
 
 // Approves the airdrop
-function useApproveAllowance(tokenAddress: Address, amount: BigNumber, onPending: () => void, onSuccess: () => void) {
+function useApproveAllowance(tokenAddress: Address, amount: BigNumber, onPending: () => void, onSuccess: () => void, onError: (error: string) => void) {
   const { address } = useAccount();
   const chainId = useChainId();
   const airdropAddress = airdropAddressByChain[chainId as 5];
@@ -81,6 +81,7 @@ function useApproveAllowance(tokenAddress: Address, amount: BigNumber, onPending
   const { data, write } = useContractWrite({
     ...approveConfig,
     onSuccess: onPending,
+    // onError: error => onError(error.message),
   });
 
   const { refetch } = useContractRead({
@@ -92,6 +93,7 @@ function useApproveAllowance(tokenAddress: Address, amount: BigNumber, onPending
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess,
+    onError: error => onError(error.message),
   });
 
   return {
@@ -108,6 +110,7 @@ function useApproveAirdrop(
   recipients: AirdropRecipient[],
   onPending: () => void,
   onSuccess: () => void,
+  onError: (error: string) => void,
 ) {
   const { config } = usePrepareAirdropAirdropErc20({
     args: [
@@ -118,9 +121,15 @@ function useApproveAirdrop(
     ],
   });
 
-  const { data, write } = useAirdropAirdropErc20({ ...config, onSuccess: onPending });
+  const { data, write } = useAirdropAirdropErc20({
+    ...config, onSuccess: onPending, onError: (error) => {
+      onError(error.message);
+    }
+  });
 
-  const { isLoading } = useWaitForTransaction({ hash: data?.hash, onSuccess });
+  const { isLoading } = useWaitForTransaction({
+    hash: data?.hash, onSuccess, onError: error => onError(error.message),
+  });
 
   return {
     isLoading,
@@ -142,13 +151,18 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
   const [errorMessage, setErrorMessage] = useState<string | false>(false);
 
   const displayMessage = (message: string, type?: 'success' | 'error') => {
-    type ? toast[type](message) : toast(message);
     if (type === 'error') {
       setLoadingMessage(false);
       setErrorMessage(message);
-    } else if (type !== 'success') {
+      toast[type](message) 
+    } else if (type === 'success') {
       setLoadingMessage(message);
       setErrorMessage(false);
+      toast[type](message) 
+    } else {
+      setLoadingMessage(message);
+      setErrorMessage(false);
+      toast(message)
     }
   }
 
@@ -189,6 +203,9 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
       displayMessage('Airdrop transaction successful!', 'success');
       setOpenModal('congrats');
     },
+    function onError(error) {
+      displayMessage(error, 'error');
+    }
   );
 
   const { write: approveWrite } = useApproveAllowance(
@@ -199,6 +216,9 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
       displayMessage('Approval transaction submitted!', 'success');
       airdropWrite?.();
     },
+    function onError(error) {
+      displayMessage(error, 'error');
+    }
   );
 
   const handleTokenAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {

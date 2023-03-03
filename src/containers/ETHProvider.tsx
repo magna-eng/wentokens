@@ -11,7 +11,7 @@ import { CongratsModal, ConfirmModal, ModalSelector } from '../ui/Modal';
 import Switch from '../ui/Switch';
 
 // Prepares the airdrop
-function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuccess: () => void) {
+function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuccess: () => void, onError: (error: string) => void) {
   const { config } = usePrepareAirdropAirdropEth({
     args: [recipients.map(({ address }) => address), recipients.map(({ amount }) => amount)],
     overrides: {
@@ -22,12 +22,13 @@ function useAirdrop(recipients: AirdropRecipient[], onPending: () => void, onSuc
   const { data, write } = useAirdropAirdropEth({
     ...config,
     onSuccess: onPending,
+    onError: error => onError(error.message),
   });
 
   const { isLoading } = useWaitForTransaction({
     hash: data?.hash,
     onSuccess,
-    onError: () => toast.error('Airdrop transaction failed!'),
+    onError: error => onError(error.message),
   });
 
   return {
@@ -49,13 +50,18 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
   const [errorMessage, setErrorMessage] = useState<string | false>(false);
 
   const displayMessage = (message: string, type?: 'success' | 'error') => {
-    type ? toast[type](message) : toast(message);
     if (type === 'error') {
       setLoadingMessage(false);
       setErrorMessage(message);
-    } else if (type !== 'success') {
+      toast[type](message) 
+    } else if (type === 'success') {
       setLoadingMessage(message);
       setErrorMessage(false);
+      toast[type](message) 
+    } else {
+      setLoadingMessage(message);
+      setErrorMessage(false);
+      toast(message)
     }
   }
 
@@ -86,6 +92,9 @@ export default function AirdropETH({ selected, setSelected }: IAirdropEthProps) 
     function onSuccess() {
       displayMessage('Airdrop transaction successful!', 'success');
       setOpenModal('congrats');
+    },
+    function onError(error: string) {
+      displayMessage(error, 'error');
     },
   );
 
