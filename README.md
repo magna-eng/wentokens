@@ -4,7 +4,7 @@ This is a [wagmi](https://wagmi.sh) + [Foundry](https://book.getfoundry.sh/) + [
 
 # Getting Started
 
-Run `npm run dev` in your terminal, and then open [localhost:5173](http://localhost:5173) in your browser.
+Run `yarn dev` in your terminal, and then open [localhost:5173](http://localhost:5173) in your browser.
 
 Once the webpage has loaded, changes made to files inside the `src/` directory (e.g. `src/App.tsx`) will automatically update the webpage.
 
@@ -27,7 +27,7 @@ curl -L https://foundry.paradigm.xyz | bash
 To generate ABIs & React Hooks from your Foundry project (in `./contracts`), you can run:
 
 ```
-npm run wagmi
+yarn wagmi
 ```
 
 This will use the wagmi config (`wagmi.config.ts`) to generate a `src/generated.ts` file which will include your ABIs & Hooks that you can start using in your project.
@@ -63,7 +63,7 @@ Go ahead and open up your `.env` file, and enter the following env vars:
 You can now deploy your contract!
 
 ```
-npm run deploy
+yarn deploy
 ```
 
 # Developing with Anvil (Mainnet Fork)
@@ -81,7 +81,7 @@ Make sure you have Foundry installed & set up.
 Run the command:
 
 ```
-npm run dev:foundry
+yarn dev:foundry
 ```
 
 This will:
@@ -95,7 +95,7 @@ This will:
 Now that we have an Anvil instance up and running, let's deploy our smart contract to the Anvil network:
 
 ```
-pnpm run deploy:anvil
+yarn deploy:anvil
 ```
 
 ## Start developing
@@ -104,7 +104,7 @@ Now that your contract has been deployed to Anvil, you can start playing around 
 
 Head to [localhost:5173](http://localhost:5173) in your browser, connect your wallet, and try increment the counter on the Foundry chain.
 
-> Tip: If you import an Anvil private key into your browser wallet (MetaMask, Coinbase Wallet, etc) – you will have 10,000 ETH to play with 😎. The private key is found in the terminal under "Private Keys" when you start up an Anvil instance with `npm run dev:foundry`.
+> Tip: If you import an Anvil private key into your browser wallet (MetaMask, Coinbase Wallet, etc) – you will have 10,000 ETH to play with 😎. The private key is found in the terminal under "Private Keys" when you start up an Anvil instance with `yarn dev:foundry`.
 
 # Learn more
 
