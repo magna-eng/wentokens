@@ -40,11 +40,6 @@ yarn-error.log*
 
 .vercel
 
-# typescript
-
-\*.tsbuildinfo
-src/generated.ts
-
 # Compiler files
 cache/
 contracts/out/
