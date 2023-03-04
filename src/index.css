@@ -1,0 +1,21 @@
+/* Import fonts from Google fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@500&family=Inter:wght@500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: auto;
+  background-color: #050505;
+  background-image: url('./bg-grid.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom;
+}
