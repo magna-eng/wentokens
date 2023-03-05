@@ -163,25 +163,4 @@ contract Airdrop {
             }
         }
     }
-
-    /**
-     *
-     * @param token ERC20 token to airdrop
-     * @param recipients list of recipients
-     * @param values values to send each recipient
-     *
-     * @dev This function is used to benchmark against airdropERC20
-     * source: https://etherscan.io/address/0xD152f549545093347A162Dce210e7293f1452150#code
-     */
-    function disperseToken(
-        IERC20 token,
-        address[] memory recipients,
-        uint256[] memory values
-    ) external {
-        uint256 total = 0;
-        for (uint256 i = 0; i < recipients.length; i++) total += values[i];
-        require(token.transferFrom(msg.sender, address(this), total));
-        for (uint256 i = 0; i < recipients.length; i++)
-            require(token.transfer(recipients[i], values[i]));
-    }
 }
