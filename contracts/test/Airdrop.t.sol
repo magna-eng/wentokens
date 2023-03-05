@@ -65,14 +65,4 @@ contract AirdropTest is Test {
         vm.prank(admin);
         airdrop.airdropETH{value: AIRDROP_SIZE}(recipients, amounts);
     }
-
-    function testAirdrop_disperseApp() external {
-        console.log(
-            "[TEST]: Airdrops ERC20 tokens to recipients using disperseApp function for benchmark"
-        );
-        vm.prank(admin);
-        token.approve(address(airdrop), AIRDROP_SIZE);
-        vm.prank(admin);
-        airdrop.disperseToken(token, recipients, amounts);
-    }
 }
