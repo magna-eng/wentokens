@@ -8,6 +8,7 @@ export default defineConfig({
     foundry({
       deployments: {
         Airdrop: {
+          [chains.mainnet.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e',
           [chains.goerli.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e',
           [chains.sepolia.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e'
         },
