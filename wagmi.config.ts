@@ -9,6 +9,7 @@ export default defineConfig({
       deployments: {
         Airdrop: {
           [chains.goerli.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e',
+          [chains.sepolia.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e'
         },
       },
       artifacts: '/out', // TODO: comment this out when wagmi-cli bug is fixed
