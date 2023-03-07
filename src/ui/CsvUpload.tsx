@@ -18,7 +18,7 @@ export default function CSVUpload<T = string[]>({ onUpload, onReset }: ICSVUploa
       header={false}
       config={{
         worker: true,
-        skipEmptyLines: true
+        skipEmptyLines: true,
       }}
       onUploadAccepted={(data: ParseResult<T>) => {
         setFileCompleted('success');
@@ -30,7 +30,7 @@ export default function CSVUpload<T = string[]>({ onUpload, onReset }: ICSVUploa
       }}
       onUploadRejected={() => {
         setFileCompleted('error');
-        toast.error('Upload rejected - check to make sure your CSV is properly formatted')
+        toast.error('Upload rejected - check to make sure your CSV is properly formatted');
       }}
       onDragOver={(event: DragEvent) => event.preventDefault()}
       onDragLeave={(event: DragEvent) => event.preventDefault()}

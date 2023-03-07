@@ -22,8 +22,7 @@ module.exports = {
     },
     fontFamily: {
       display: ['Inter Display', 'Inter', 'sans-serif'],
-      body: ['Inter', 'sans-serif'],
-      logo: ['"Neue Montreal"', 'Arimo', 'sans-serif'],
+      sans: ['Inter', 'sans-serif'],
     },
     extend: {
       backgroundImage: {
