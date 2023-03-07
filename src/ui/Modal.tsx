@@ -6,7 +6,7 @@ import { FetchBalanceResult } from 'wagmi/dist/actions';
 import Checkmark from '../assets/congrats-checkmark.svg';
 import { AirdropRecipient } from '../types/airdrop';
 import Button from './Button';
-import cls from './classesUtil'
+import cls from './classesUtil';
 
 interface IBaseModalProps {
   className?: string;
@@ -54,7 +54,9 @@ export function CongratsModal(props: IBaseModalProps) {
       <button
         className={tw.btn.btn_secondary.w_full.border_2.border_neutral_700.bg_transparent}
         onClick={() => props.setIsOpen?.(false)}
-      >Confirm</button>
+      >
+        Confirm
+      </button>
     </BaseModal>
   );
 }
@@ -69,12 +71,23 @@ type IModalProps = IBaseModalProps & {
   onSubmit?: () => void;
 };
 
-export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage, errorMessage, onSubmit, isOpen, ...props }: IModalProps) {
+export function ConfirmModal({
+  recipients = [],
+  balanceData = {},
+  loadingMessage,
+  errorMessage,
+  onSubmit,
+  isOpen,
+  ...props
+}: IModalProps) {
   const { decimals = 18, value: balance = BigNumber.from(0), symbol = '' } = balanceData;
   const total = useMemo(() => recipients.reduce((acc, { amount }) => acc.add(amount), BigNumber.from(0)), [recipients]);
-  const buttonMessage = errorMessage ?? loadingMessage;
+  const remainingBalance = balance.sub(total);
+  const insufficientBalance = remainingBalance.lt(BigNumber.from(0));
+  const disableButton = !!(insufficientBalance || loadingMessage || errorMessage);
+  const buttonMessage = insufficientBalance ? 'Insufficient Tokens' : errorMessage ?? loadingMessage;
   return (
-    <BaseModal {...props} isOpen={!!loadingMessage || isOpen} className={tw.w_['1/2'].max_w_5xl.p_0.font_light}>
+    <BaseModal {...props} isOpen={!!loadingMessage || isOpen} className={tw.sm(tw.w_['1/2']).max_w_5xl.p_0.font_light}>
       <div className={tw.pt_4.px_10.pb_2}>
         <h1 className={tw.text_2xl.font_medium}>Recipients and amounts</h1>
         <h4 className={tw.text_sm.text_neutral_300.mt_2}>
@@ -86,34 +99,41 @@ export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage
       <div className={tw.p_4.px_10}>
         <h3 className={tw.text_xl.text_left.my_2.font_medium}>Confirm</h3>
         <div
-          className={tw.w_full.border_2.border_neutral_700.bg_transparent.rounded_lg.border_separate.border_spacing_0.overflow_auto}
+          className={
+            tw.w_full.border_2.border_neutral_700.bg_transparent.rounded_lg.border_separate.border_spacing_0
+              .overflow_auto
+          }
           style={{
-            height: 'calc(50vh - 5em)' ,
+            height: 'calc(50vh - 5em)',
           }}
-       >
+        >
           <table className={tw.w_full}>
-          <thead>
-            <tr className={tw.border_b_2.border_neutral_700}>
-              <th className={tw.bg_neutral_900.capitalize.text_neutral_400.p_3.sticky.top_0.text_left}>Recipient</th>
-              <th className={tw.bg_neutral_900.capitalize.text_neutral_400.p_3.sticky.top_0.text_right}>Amount</th>
-            </tr>
-          </thead>
-          <tbody className={tw.overflow_auto}>
-            {recipients.map((recipient, index) => (
-              <tr key={recipient.address + index}>
-                <td
-                  className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left.border_t_2.border_neutral_700}
-                >
-                  {recipient.address}
-                </td>
-                <td
-                  className={tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right.border_t_2.border_neutral_700}
-                >
-                  {ethers.utils.formatUnits(recipient.amount, decimals)}
-                </td>
+            <thead>
+              <tr className={tw.border_b_2.border_neutral_700}>
+                <th className={tw.bg_neutral_900.capitalize.text_neutral_400.p_3.sticky.top_0.text_left}>Recipient</th>
+                <th className={tw.bg_neutral_900.capitalize.text_neutral_400.p_3.sticky.top_0.text_right}>Amount</th>
               </tr>
-            ))}
-          </tbody>
+            </thead>
+            <tbody className={tw.overflow_auto}>
+              {recipients.map((recipient, index) => (
+                <tr key={recipient.address + index}>
+                  <td
+                    className={
+                      tw.capitalize.bg_transparent.text_neutral_400.p_3.text_left.border_t_2.border_neutral_700
+                    }
+                  >
+                    {recipient.address}
+                  </td>
+                  <td
+                    className={
+                      tw.capitalize.bg_transparent.text_neutral_400.p_3.text_right.border_t_2.border_neutral_700
+                    }
+                  >
+                    {ethers.utils.formatUnits(recipient.amount, decimals)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
 
@@ -143,10 +163,17 @@ export function ConfirmModal({ recipients = [], balanceData = {}, loadingMessage
 
       <div className={tw.p_4.px_10}>
         <Button
-          onClick={() => !loadingMessage && onSubmit?.()}
-          className={cls('', loadingMessage ? tw.loading: false)}
+          onClick={() => !disableButton && onSubmit?.()}
+          disabled={insufficientBalance}
+          className={cls('', loadingMessage ? tw.loading : false, insufficientBalance ? '!text-base-100/75' : false)}
         >
-          {buttonMessage ? buttonMessage : <><p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" /></>}
+          {buttonMessage ? (
+            buttonMessage
+          ) : (
+            <>
+              <p className={tw.mr_1}>Sign Transaction</p> <Icon icon="ri:edit-fill" />
+            </>
+          )}
         </Button>
       </div>
     </BaseModal>

@@ -65,7 +65,13 @@ function useTokenData(tokenAddress: Address) {
 }
 
 // Approves the airdrop
-function useApproveAllowance(tokenAddress: Address, amount: BigNumber, onPending: () => void, onSuccess: () => void, onError: (error: string) => void) {
+function useApproveAllowance(
+  tokenAddress: Address,
+  amount: BigNumber,
+  onPending: () => void,
+  onSuccess: () => void,
+  onError: (error: string) => void,
+) {
   const { address } = useAccount();
   const chainId = useChainId();
   const airdropAddress = airdropAddressByChain[chainId as 5];
@@ -122,13 +128,17 @@ function useApproveAirdrop(
   });
 
   const { data, write } = useAirdropAirdropErc20({
-    ...config, onSuccess: onPending, onError: (error) => {
+    ...config,
+    onSuccess: onPending,
+    onError: error => {
       onError(error.message);
-    }
+    },
   });
 
   const { isLoading } = useWaitForTransaction({
-    hash: data?.hash, onSuccess, onError: error => onError(error.message),
+    hash: data?.hash,
+    onSuccess,
+    onError: error => onError(error.message),
   });
 
   return {
@@ -154,23 +164,23 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     if (type === 'error') {
       setLoadingMessage(false);
       setErrorMessage(message);
-      toast[type](message) 
+      toast[type](message);
     } else if (type === 'success') {
       setLoadingMessage(message);
       setErrorMessage(false);
-      toast[type](message) 
+      toast[type](message);
     } else {
       setLoadingMessage(message);
       setErrorMessage(false);
-      toast(message)
+      toast(message);
     }
-  }
+  };
 
   const displayModal = () => {
     setOpenModal('confirm');
     setLoadingMessage(false);
     setErrorMessage(false);
-  }
+  };
 
   const {
     name: tokenName,
@@ -205,7 +215,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     },
     function onError(error) {
       displayMessage(error, 'error');
-    }
+    },
   );
 
   const { write: approveWrite } = useApproveAllowance(
@@ -218,7 +228,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
     },
     function onError(error) {
       displayMessage(error, 'error');
-    }
+    },
   );
 
   const handleTokenAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,17 +240,21 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
 
   return (
     <div className={tw.container}>
-      {openModal === 'confirm' && <ConfirmModal
-        isOpen={openModal === 'confirm'}
-        setIsOpen={val => setOpenModal(val ? 'confirm' : false)}
-        recipients={parsedRecipients}
-        balanceData={balanceData}
-        loadingMessage={loadingMessage ? loadingMessage : undefined}
-        errorMessage={errorMessage ? errorMessage : undefined}
-        onSubmit={() => approveWrite?.()}
-      />}
-      {openModal === 'congrats' && <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />}
-      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap + ' w-1/2'}>
+      {openModal === 'confirm' && (
+        <ConfirmModal
+          isOpen={openModal === 'confirm'}
+          setIsOpen={val => setOpenModal(val ? 'confirm' : false)}
+          recipients={parsedRecipients}
+          balanceData={balanceData}
+          loadingMessage={loadingMessage ? loadingMessage : undefined}
+          errorMessage={errorMessage ? errorMessage : undefined}
+          onSubmit={() => approveWrite?.()}
+        />
+      )}
+      {openModal === 'congrats' && (
+        <CongratsModal isOpen={openModal === 'congrats'} setIsOpen={val => setOpenModal(val ? 'congrats' : false)} />
+      )}
+      <div className={tw.flex.flex_col.text_left.space_y_2.whitespace_pre_wrap.sm(tw.w_['1/2'])}>
         <h2 className={tw.text_3xl.text_base_100.mb_2}>Token Address</h2>
         {!validToken ? <Switch selected={selected} setSelected={setSelected} /> : null}
         <input
@@ -250,7 +264,7 @@ export default function ERC20({ selected, setSelected }: IAirdropEthProps) {
           onChange={handleTokenAddressChange}
         />
         <div>
-          <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs.mt_2}>
+          <div className={tw.badge.badge_primary.badge_outline.px_3.py_2.text_xs.mt_2.h_auto + ' !min-h-fit'}>
             {validToken ? (
               <>
                 You have {formattedTokenBalance} {tokenSymbol}
