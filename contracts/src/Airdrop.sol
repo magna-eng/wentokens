@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+// License: https://github.com/magna-eng/wentokens/blob/33525bd94508f0976e114bcbc6761add2a21ad06/LICENSE.md
 pragma solidity =0.8.17;
 
 import "@openzeppelin/token/ERC20/utils/SafeERC20.sol";
