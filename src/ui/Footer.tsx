@@ -8,7 +8,7 @@ export default function Footer() {
       <div>
         <p className={tw.flex.justify_center.items_end.gap_1}>
           Powered by{' '}
-          <a 
+          <a
             href="https://www.magna.so/"
             target="_blank"
             className={tw.flex.justify_center.items_start.gap_1}
@@ -18,41 +18,42 @@ export default function Footer() {
         </p>
         <p className={tw.flex.justify_center.items_end.gap_1}>
           Contributors: {' '}
-          <a 
+          <a
+            className={tw.hover(tw.text_primary)}
             href="https://twitter.com/PopPunkOnChain"
             target="_blank"
-            className={tw.flex.justify_center.items_start.gap_1}
           >
             @PopPunkOnChain
           </a>
-          <a 
+          <a
+            className={tw.hover(tw.text_primary)}
+
             href="https://twitter.com/danxtao"
             target="_blank"
-            className={tw.flex.justify_center.items_start.gap_1}
           >
             @danxtao
           </a>
         </p>
         <p className={tw.flex.justify_center.items_end.gap_1}>
           In collaboration with: {' '}
-          <a 
+          <a
+            className={tw.hover(tw.text_primary)}
             href="https://twitter.com/zellic_io"
             target="_blank"
-            className={tw.flex.justify_center.items_start.gap_1}
           >
             @zellic_io
           </a>
-          <a 
+          <a
+            className={tw.hover(tw.text_primary)}
             href="https://twitter.com/osec_io"
             target="_blank"
-            className={tw.flex.justify_center.items_start.gap_1}
           >
             @osec_io
           </a>
-          <a 
+          <a
+            className={tw.hover(tw.text_primary)}
             href="https://twitter.com/optimizoor"
             target="_blank"
-            className={tw.flex.justify_center.items_start.gap_1}
           >
             @optimizoor
           </a>
