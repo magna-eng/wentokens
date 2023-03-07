@@ -21,12 +21,15 @@ export function App() {
       {!isConnected && (
         <div className={tw.hero.bg_transparent.min_h_fit}>
           <div className={tw.hero_content.text_center}>
-            <div className={tw.max_w_md}>
+            <div className={tw.max_w_md.pt_4}>
               <h1 className={tw.text_7xl.text_transparent.bg_clip_text.bg_gradient_to_r.from_primary.to_base_100}>
                 wentokens
               </h1>
-              <p className={tw.py_6.text_neutral_400}>
-                The fastest airdrop tool in da wild west. Connect your wallet to get started.
+              <p className={tw.pt_6.text_neutral_400}>
+                A highly gas-optimized tool for bulk token transfers (both ERC-20 and native ETH).
+              </p>
+              <p className={tw.pt_4.pb_6.text_neutral_400}>
+              Connect your wallet to get started.
               </p>
               <div className={tw.flex.flex_row.justify_center}>
                 <ConnectButton />
