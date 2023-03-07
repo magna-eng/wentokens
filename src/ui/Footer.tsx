@@ -20,6 +20,12 @@ export default function Footer() {
           <a className={tw.hover(tw.text_primary)} href="https://twitter.com/danxtao" target="_blank">
             @danxtao
           </a>
+          <a className={tw.hover(tw.text_primary)} href="https://twitter.com/yungtesh" target="_blank">
+            @yungtesh
+          </a>
+          <a className={tw.hover(tw.text_primary)} href="https://twitter.com/arundotai" target="_blank">
+            @arundotai
+          </a>
         </p>
         <p className={tw.flex.justify_center.items_end.gap_1}>
           <p className={tw.text_base_100.hidden.sm(tw.inline_block)}>In collaboration with: </p>

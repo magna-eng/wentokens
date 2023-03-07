@@ -6,7 +6,7 @@ import '../src/AirdropComparison.sol';
 import '../src/Token.sol';
 
 contract AirdropComparisonTest is Test {
-  uint256 constant AIRDROP_SIZE = 7000;
+  uint256 constant AIRDROP_SIZE = 9000;
   AirdropComparison airdrop;
   Token token;
   address admin;
@@ -38,7 +38,7 @@ contract AirdropComparisonTest is Test {
     return uint256(keccak256(abi.encodePacked(block.timestamp, block.difficulty, block.number)));
   }
 
-  function testAirdrop_airdropERC20() external {
+  function testAirdrop_comparisonAirdropERC20() external {
     console.log('[TEST]: Airdrops ERC20 tokens to recipients using assembly function');
     vm.prank(admin);
     token.approve(address(airdrop), AIRDROP_SIZE);
@@ -46,7 +46,7 @@ contract AirdropComparisonTest is Test {
     airdrop.airdropERC20(token, recipients, amounts, AIRDROP_SIZE);
   }
 
-  function testAirdrop_disperseApp() external {
+  function testAirdrop_comparisonDisperseApp() external {
     console.log('[TEST]: Airdrops ERC20 tokens to recipients using disperseApp function for benchmark');
     vm.prank(admin);
     token.approve(address(airdrop), AIRDROP_SIZE);
