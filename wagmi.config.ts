@@ -8,9 +8,9 @@ export default defineConfig({
     foundry({
       deployments: {
         Airdrop: {
-          [chains.mainnet.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e',
-          [chains.goerli.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e',
-          [chains.sepolia.id]: '0xBE4E91D4b555874f0dFA9718D7d9331285a88C9e'
+          [chains.mainnet.id]: '0x2c952eE289BbDB3aEbA329a4c41AE4C836bcc231',
+          [chains.goerli.id]: '0x2c952eE289BbDB3aEbA329a4c41AE4C836bcc231',
+          [chains.sepolia.id]: '0x2c952eE289BbDB3aEbA329a4c41AE4C836bcc231'
         },
       },
       artifacts: '/out', // TODO: comment this out when wagmi-cli bug is fixed

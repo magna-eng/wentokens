@@ -9,5 +9,7 @@ optimizer-runs = 10_000_000
 
 [rpc_endpoints]
 goerli = "${GOERLI_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
+ethereum = "${ETHEREUM_RPC_URL}"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
