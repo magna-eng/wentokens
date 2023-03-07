@@ -25,7 +25,14 @@ export default function Navbar() {
         </a>
       </div>
       <div className={tw.navbar_end}>
-        <ConnectButton />
+        <div className={tw.mr_4}>
+          <ConnectButton />
+        </div>
+        <div className={tw.mr_4}>
+          <a href={etherscanURL} target="_blank" rel="noopener noreferrer">
+            <img src={EtherscanLogo} alt="Etherscan Logo" className={tw.w_6.h_6} />
+          </a>
+        </div>
       </div>
     </div>
   );
