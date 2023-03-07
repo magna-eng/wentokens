@@ -1,11 +1,11 @@
 import { useState } from 'react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Toaster } from 'sonner';
 import { tw } from 'typewind';
 import { useAccount } from 'wagmi';
 import ERC20Provider from './containers/ERC20Provider';
 import ETHProvider from './containers/ETHProvider';
 import { AirdropType, AirdropTypeEnum } from './types/airdrop';
-import ConnectButton from './ui/ConnectButton';
 import Footer from './ui/Footer';
 import Navbar from './ui/Navbar';
 

@@ -1,9 +1,9 @@
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { tw } from 'typewind';
-import ConnectButton from './ConnectButton';
 
 export default function Navbar() {
   return (
-    <div className={tw.navbar.bg_transparent.border_b_['1px'].border_b_neutral_800.py_4.px_40}>
+    <div className={tw.navbar.bg_transparent.border_b_['1px'].py_4.px_40}>
       <div className={tw.navbar_start}>
         <a
           href="/"
