@@ -10,8 +10,15 @@ export default function Navbar() {
   const { chain } = useNetwork();
   const chainID = (chain?.id ?? 1) as ChainID;
   const chainName = chain?.name?.toLowerCase() ?? 'ethereum';
-  const subdomain = !chain || chainName === 'ethereum' ? '' : `${chain.name}.`;
-  const etherscanURL = `https://${subdomain}etherscan.io/address/${airdropAddress[chainID]}`;
+  const baseDomain = chainName.includes('arbitrum') ? 'arbiscan.io' : 'etherscan.io';
+  const subdomain =
+    !chain || chainName === 'ethereum' || chainName === 'arbitrum one'
+      ? ''
+      : chainName === 'arbitrum goerli'
+      ? 'goerli.'
+      : `${chain.name}.`;
+
+  const explorerURL = `https://${subdomain}${baseDomain}/address/${airdropAddress[chainID]}`;
   return (
     <div className={tw.navbar.bg_transparent.border_b_['1px'].py_4.px_4.sm(tw.px_40)}>
       <div className={tw.navbar_start}>
@@ -29,7 +36,7 @@ export default function Navbar() {
           <ConnectButton />
         </div>
         <div className={tw.mr_4} style={{ minWidth: '30px' }}>
-          <a href={etherscanURL} target="_blank" rel="noopener noreferrer">
+          <a href={explorerURL} target="_blank" rel="noopener noreferrer">
             <img src={EtherscanLogo} alt="Etherscan Logo" className={tw.w_8.h_8} />
           </a>
         </div>
