@@ -8,7 +8,6 @@ const BlockExplorers: any = {
   AVALANCHE: 'https://snowtrace.io/address/',
   AVALANCHE_FUJI: 'https://testnet.snowtrace.io/address/',
   SEPOLIA: 'https://sepolia.etherscan.io/address/',
-  DEFAULT: 'https://etherscan.io/address/',
 };
 
 export const getBlockExplorer = (chainName: string) => {
