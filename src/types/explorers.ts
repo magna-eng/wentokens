@@ -2,7 +2,7 @@ const BlockExplorers: any = {
   ETHEREUM: 'https://etherscan.io/address/',
   GOERLI: 'https://goerli.etherscan.io/address/',
   ARBITRUM_ONE: 'https://arbiscan.io/address/',
-  ARBITRUM_GORELI: 'https://goerli.arbiscan.io/address/',
+  ARBITRUM_GOERLI: 'https://goerli.arbiscan.io/address/',
   POLYGON: 'https://polygonscan.com/address/',
   POLYGON_MUMBAI: 'https://mumbai.polygonscan.com/address/',
   AVALANCHE: 'https://snowtrace.io/address/',
