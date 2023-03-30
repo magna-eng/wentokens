@@ -3,22 +3,16 @@ import { tw } from 'typewind';
 import { useNetwork } from 'wagmi';
 import EtherscanLogo from '../assets/etherscan-logo.svg';
 import { airdropAddress } from '../generated';
+import { getBlockExplorer } from '../types/explorers';
 
 type ChainID = keyof typeof airdropAddress;
 
 export default function Navbar() {
   const { chain } = useNetwork();
   const chainID = (chain?.id ?? 1) as ChainID;
-  const chainName = chain?.name?.toLowerCase() ?? 'ethereum';
-  const baseDomain = chainName.includes('arbitrum') ? 'arbiscan.io' : 'etherscan.io';
-  const subdomain =
-    !chain || chainName === 'ethereum' || chainName === 'arbitrum one'
-      ? ''
-      : chainName === 'arbitrum goerli'
-      ? 'goerli.'
-      : `${chain.name}.`;
+  const chainName = chain?.name?.toUpperCase().replace(' ', '_') ?? 'ETHEREUM';
+  const explorerURL = `${getBlockExplorer(chainName)}${airdropAddress[chainID]}`;
 
-  const explorerURL = `https://${subdomain}${baseDomain}/address/${airdropAddress[chainID]}`;
   return (
     <div className={tw.navbar.bg_transparent.border_b_['1px'].py_4.px_4.sm(tw.px_40)}>
       <div className={tw.navbar_start}>
