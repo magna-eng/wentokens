@@ -10,7 +10,7 @@ type ChainID = keyof typeof airdropAddress;
 export default function Navbar() {
   const { chain } = useNetwork();
   const chainID = (chain?.id ?? 1) as ChainID;
-  const chainName = chain?.name?.toUpperCase().replace(' ', '_') ?? 'ETHEREUM';
+  const chainName = chain?.name?.toUpperCase().replaceAll(' ', '_') ?? 'ETHEREUM';
   const explorerURL = `${getBlockExplorer(chainName)}${airdropAddress[chainID]}`;
 
   return (
