@@ -28,13 +28,10 @@ export function App() {
               <p className={tw.pt_6.text_neutral_400}>
                 A highly gas-optimized tool for bulk token transfers (both ERC-20 and native ETH).
               </p>
-              <p className={tw.pt_4.pb_6.text_neutral_400}>wentokens is under maintenance and will be back soon!</p>
-              
-              {/* <p className={tw.pt_4.pb_6.text_neutral_400}>Connect your wallet to get started.</p>
+              <p className={tw.pt_4.pb_6.text_neutral_400}>Connect your wallet to get started.</p>
               <div className={tw.flex.flex_row.justify_center}>
                 <ConnectButton />
-              </div> */}
-
+              </div>
             </div>
           </div>
         </div>

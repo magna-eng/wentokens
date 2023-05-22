@@ -27,7 +27,7 @@ export default function Navbar() {
       </div>
       <div className={tw.navbar_end}>
         <div className={tw.mr_4}>
-          {/* <ConnectButton /> */}
+          <ConnectButton />
         </div>
         <div className={tw.mr_4} style={{ minWidth: '30px' }}>
           <a href={explorerURL} target="_blank" rel="noopener noreferrer">
