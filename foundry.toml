@@ -13,5 +13,6 @@ sepolia = "${SEPOLIA_RPC_URL}"
 ethereum = "${ETHEREUM_RPC_URL}"
 arbitrum = "${ARBITRUM_RPC_URL}"
 arbitrum-goerli = "${ARBITRUM_GOERLI_RPC_URL}"
+bnb = "${BNB_RPC_URL}"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

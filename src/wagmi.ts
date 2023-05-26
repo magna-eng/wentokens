@@ -11,6 +11,7 @@ import {
   avalancheFuji,
   polygon,
   polygonMumbai,
+  bsc,
 } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 
@@ -25,6 +26,7 @@ const { chains, provider, webSocketProvider } = configureChains(
     avalancheFuji,
     polygon,
     polygonMumbai,
+    bsc,
     ...(import.meta.env?.MODE === 'development' ? [goerli, foundry] : []),
   ],
   [publicProvider()],
