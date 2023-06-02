@@ -46,6 +46,33 @@ contract AirdropComparisonTest is Test {
     airdrop.airdropERC20(token, recipients, amounts, AIRDROP_SIZE);
   }
 
+  function testAirdrop_comparisonAirdropERC20LCFR() external {
+    console.log('[TEST]: LCFRMOD - Airdrops ERC20 tokens to recipients using assembly function');
+    vm.prank(admin);
+    token.approve(address(airdrop), AIRDROP_SIZE);
+    vm.prank(admin);
+    airdrop.airdropERC20LCFR(address(token), recipients, amounts, AIRDROP_SIZE);
+  }
+
+  function testAirdrop_airdropETH() external {
+    console.log(
+      "[TEST]: Airdrops ETH to recipients using assembly function"
+    );
+    payable(admin).transfer(AIRDROP_SIZE);
+    vm.prank(admin);
+    airdrop.airdropETH{value: AIRDROP_SIZE}(recipients, amounts);
+  }
+
+  function testAirdrop_airdropETHLCFR() external {
+    console.log(
+      "[TEST]: LCFRMOD Airdrops ETH to recipients using assembly function"
+    );
+    payable(admin).transfer(AIRDROP_SIZE);
+    vm.prank(admin);
+    airdrop.airdropETHLCFR{value: AIRDROP_SIZE}(recipients, amounts);
+  }
+
+
   function testAirdrop_comparisonDisperseApp() external {
     console.log('[TEST]: Airdrops ERC20 tokens to recipients using disperseApp function for benchmark');
     vm.prank(admin);
