@@ -54,7 +54,7 @@ contract AirdropTest is Test {
         vm.prank(admin);
         token.approve(address(airdrop), AIRDROP_SIZE);
         vm.prank(admin);
-        airdrop.airdropERC20(token, recipients, amounts, AIRDROP_SIZE);
+        airdrop.airdropERC20(address(token), recipients, amounts, AIRDROP_SIZE);
     }
 
     function testAirdrop_airdropETH() external {

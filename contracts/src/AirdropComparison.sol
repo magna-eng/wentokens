@@ -19,7 +19,10 @@ contract AirdropComparison {
     | disperseToken                                                  | 38802181        | 38802181 | 38802181 | 38802181 | 1       |
     */
 
-    error EthNotSent(); // 0x8689d991
+    // 0x8689d991
+    error EthNotSent(); 
+    // 0x543bf3c4 
+    error arrayLengthMismatch();
 
     /**
      *
